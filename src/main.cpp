@@ -70,8 +70,6 @@ int main() {
     auto nString = to_string(n);
     initializeDirs(nString);
 
-    // typedef graph_traits<Graph>::vertex_descriptor Vertex;
-    // auto index = get(vertex_index, graph);
     auto pair_vertices = vector<pair<int, int>>();
 
     for (auto i = 0; i < n; ++i) {
