@@ -6,12 +6,13 @@
 #include <numeric>
 #include <filesystem>
 #include <fstream>
-#include <stdexcept>
+
+#include "types/types.h"
+#include "Recorders/DiskRecorder/DiskRecorder.h"
 
 using namespace boost;
 using namespace std;
 
-typedef adjacency_list<vecS, vecS, directedS> Graph;
 const string GRAPH_DIR = "graphs";
 
 int countStrongComponents(const Graph& graph) {
@@ -53,48 +54,14 @@ void print_graph(const Graph& g, int n) {
     cout << "------------------------" << endl;
 }
 
-template<typename GraphType>
-void writeGraphToFile(const GraphType& g, const std::string& filename, const std::string& dirname) {
-    filesystem::path dirPath(GRAPH_DIR);
-    filesystem::path filePath = dirPath / dirname / filename;
-
-    std::ofstream ofs(filePath);
-    if (!ofs) {
-        throw std::runtime_error("Did not found file to write: " + filename);
-    }
-    boost::write_graphviz(ofs, g);
-}
-
-void initializeDirs(const std::string& dirname) {
-    filesystem::path dirPath(GRAPH_DIR);
-
-    if (!exists(dirPath)) {
-        if (!create_directory(dirPath)) {
-            throw std::runtime_error("GRAPH_DIR dir error");
-        } else {
-            cout << "Dir GRAPH_DIR created successfully." << endl;
-        }
-    }
-
-    filesystem::path filePath = dirPath / dirname;
-
-    if (!exists(filePath)) {
-        cout << filePath;
-        if (!create_directory(filePath)) {
-            throw std::runtime_error("Did not found dir: " + filePath.string());
-        } else {
-            cout << "Dir '" << filePath.string() << "' created successfully." << endl;
-        }
-    }
-}
-
 int main() {
-    int n = 5;
+    int n = 3;
     std::cout << "Enter number of vertexes" << std::endl;
     std::cin >> n;
 
     auto nString = to_string(n);
-    initializeDirs(nString);
+    DiskRecorder recorder = DiskRecorder();
+    recorder.initialize();
 
     auto pair_vertices = vector<pair<int, int>>();
 
@@ -127,11 +94,7 @@ int main() {
             int acc = 2 * 3 * 5 * 7 * 11;
             if (countStrongComponents(graph) == 1) {
                 if (!isAperiodic(graph, 0, 0, *vis, acc)) {
-                    try {
-                        writeGraphToFile(graph, to_string(count) + ".dot", nString);
-                    } catch (const std::exception& ex) {
-                        std::cerr << "Error: " << ex.what() << std::endl;
-                    }
+                    recorder.recordGraph(graph);
                     count++;
                 }
 
