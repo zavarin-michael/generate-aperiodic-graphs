@@ -2,6 +2,8 @@
 #include <vector>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/graphviz.hpp>
+#include <boost/graph/strong_components.hpp>
+#include <numeric>
 #include <filesystem>
 #include <fstream>
 #include <stdexcept>
@@ -11,6 +13,30 @@ using namespace std;
 
 typedef adjacency_list<vecS, vecS, directedS> Graph;
 const string GRAPH_DIR = "graphs";
+
+int countStrongComponents(const Graph& graph) {
+    vector<int> component(num_vertices(graph));
+    return strong_components(graph, make_iterator_property_map(component.begin(), get(vertex_index, graph)));
+}
+
+bool isAperiodic(const Graph& graph, int v, int depth, vector<int> &visited, int &acc) {
+    if (visited[v] != -1) {
+        depth--;
+        const auto diff = visited[v] - depth - 1;
+        acc = gcd(diff, acc);
+    } else {
+        visited[v] = depth;
+        auto [fst, last] = adjacent_vertices(v, graph);
+
+        for (auto it = fst; it != last; ++it) {
+            if (isAperiodic(graph, *it, depth + 1, visited, acc)) {
+                return true;
+            }
+        }
+    }
+
+    return acc == 1;
+}
 
 void print_graph(const Graph& g, int n) {
     cout << "Graph:" << endl;
@@ -63,9 +89,9 @@ void initializeDirs(const std::string& dirname) {
 }
 
 int main() {
-    int n = 3;
+    int n = 5;
     std::cout << "Enter number of vertexes" << std::endl;
-    // std::cin >> n;
+    std::cin >> n;
 
     auto nString = to_string(n);
     initializeDirs(nString);
@@ -78,8 +104,6 @@ int main() {
         }
     }
 
-    cout << pair_vertices.size() << endl;
-
     vector<size_t> indices(n, 0);
 
     bool done = false;
@@ -87,20 +111,34 @@ int main() {
     while (true) {
         auto graph = Graph(n);
 
+        bool skip = false;
         for (int i = 0; i < n; ++i) {
             auto [v, u] = pair_vertices[indices[i]];
+            // if (v == i || u == i) {
+            //     skip = true;
+            //     break;
+            // }
             add_edge(i, u, graph);
             add_edge(i, v, graph);
         }
 
-        // print_graph(graph, n);
-        try {
-            writeGraphToFile(graph, to_string(count) + ".dot", nString);
-        } catch (const std::exception& ex) {
-            std::cerr << "Error: " << ex.what() << std::endl;
-        }
+        if (!skip) {
+            auto vis = new vector(n, -1);
+            int acc = 2 * 3 * 5 * 7 * 11;
+            if (countStrongComponents(graph) == 1) {
+                if (!isAperiodic(graph, 0, 0, *vis, acc)) {
+                    try {
+                        writeGraphToFile(graph, to_string(count) + ".dot", nString);
+                    } catch (const std::exception& ex) {
+                        std::cerr << "Error: " << ex.what() << std::endl;
+                    }
+                    count++;
+                }
 
-        count++;
+                // cout << acc << endl;
+                // print_graph(graph, n);
+            }
+        }
 
         for (int i = n - 1; i >= 0; --i) {
             if (indices[i] < pair_vertices.size() - 1) {
