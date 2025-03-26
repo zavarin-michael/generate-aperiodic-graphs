@@ -12,6 +12,9 @@ DiskRecorder::DiskRecorder() {
     std::cin >> subDirectory;
 
     const std::filesystem::path dirPath = GRAPH_DIR / subDirectory;
+    if (exists(dirPath)) {
+        remove_all(dirPath);
+    }
     create_directories(dirPath);
 }
 
