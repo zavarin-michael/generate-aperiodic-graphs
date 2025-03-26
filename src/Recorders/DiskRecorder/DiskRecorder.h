@@ -1,16 +1,18 @@
 #ifndef DISK_RECORDER_H
 #define DISK_RECORDER_H
 
+#include <filesystem>
+
 #include "Recorders/IRecorder.h"
 
 class DiskRecorder : public IRecorder {
 private:
-    const std::string GRAPH_DIR = "graphs";
+    static const std::filesystem::path GRAPH_DIR;
     std::string subDirectory;
     bool isRewriteFiles = true;
-    long long graphCount = 0;
+    std::size_t graphCount = 0;
 public:
-    void initialize() override;
+    DiskRecorder();
     void recordGraph(const Graph& g) override;
 };
 

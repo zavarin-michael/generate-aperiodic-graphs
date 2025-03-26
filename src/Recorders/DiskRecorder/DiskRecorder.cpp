@@ -2,34 +2,32 @@
 #include <filesystem>
 #include <boost/graph/graphviz.hpp>
 
-using namespace std;
+const std::filesystem::path DiskRecorder::GRAPH_DIR{"./graphs/"};
 
-void DiskRecorder::initialize() {
-    cout << "|---------------------------|" << endl;
-    cout << "|INITIALIZATION OF RECOREDER|" << endl;
-    cout << "|---------------------------|" << endl << endl;
-    cout << "Enter sub directory name:" << endl;
-    cin >> subDirectory;
+DiskRecorder::DiskRecorder() {
+    std::cout << "|---------------------------|" << '\n' <<
+                 "|INITIALIZATION OF RECOREDER|" << '\n' <<
+                 "|---------------------------|" << '\n' << '\n' <<
+                 "Enter sub directory name:" << '\n';
+    std::cin >> subDirectory;
 
-    const filesystem::path dirName(GRAPH_DIR);
-    const filesystem::path dirPath = dirName / subDirectory;
+    const std::filesystem::path dirPath = GRAPH_DIR / subDirectory;
     create_directories(dirPath);
 }
 
 void DiskRecorder::recordGraph(const Graph& g) {
-    filesystem::path dirName(GRAPH_DIR);
-    const auto filename = to_string(graphCount) + ".dot";
-    filesystem::path filePath = dirName / subDirectory / filename;
+    const auto filename{std::to_string(graphCount) + ".dot"};
+    std::filesystem::path filePath = GRAPH_DIR / subDirectory / filename;
 
     if (exists(filePath) && !isRewriteFiles) {
         return;
     }
 
-    ofstream ofs(filePath, ios::trunc);
+    std::ofstream ofs(filePath, std::ios::trunc);
     if (!ofs) {
-        throw runtime_error("Could not open file for writing: " + filePath.string());
+        throw std::runtime_error("Could not open file for writing: " + filePath.string());
     }
 
-    boost::write_graphviz(ofs, g);
+    write_graphviz(ofs, g);
     graphCount++;
 }

@@ -10,21 +10,18 @@
 #include "types/types.h"
 #include "Recorders/DiskRecorder/DiskRecorder.h"
 
-using namespace boost;
-using namespace std;
-
-const string GRAPH_DIR = "graphs";
+const std::string GRAPH_DIR = "graphs";
 
 int countStrongComponents(const Graph& graph) {
-    vector<int> component(num_vertices(graph));
-    return strong_components(graph, make_iterator_property_map(component.begin(), get(vertex_index, graph)));
+    std::vector<int> component(num_vertices(graph));
+    return strong_components(graph, make_iterator_property_map(component.begin(), get(boost::vertex_index, graph)));
 }
 
-bool isAperiodic(const Graph& graph, int v, int depth, vector<int> &visited, int &acc) {
+bool isAperiodic(const Graph& graph, int v, int depth, std::vector<int> &visited, int &acc) {
     if (visited[v] != -1) {
         depth--;
         const auto diff = visited[v] - depth - 1;
-        acc = gcd(diff, acc);
+        acc = std::gcd(diff, acc);
     } else {
         visited[v] = depth;
         auto [fst, last] = adjacent_vertices(v, graph);
@@ -40,38 +37,37 @@ bool isAperiodic(const Graph& graph, int v, int depth, vector<int> &visited, int
 }
 
 void print_graph(const Graph& g, int n) {
-    cout << "Graph:" << endl;
+    std::cout << "Graph:" << '\n';
     for (int v = 0; v < n; ++v) {
-        cout << v << ": ";
+        std::cout << v << ": ";
         // Получаем диапазон исходящих рёбер для вершины v.
         auto edges = out_edges(v, g);
         for (auto it = edges.first; it != edges.second; ++it) {
             int target_vertex = target(*it, g);
-            cout << target_vertex << " ";
+            std::cout << target_vertex << " ";
         }
-        cout << endl;
+        std::cout << '\n';
     }
-    cout << "------------------------" << endl;
+    std::cout << "------------------------" << '\n';
 }
 
 int main() {
     int n = 3;
-    std::cout << "Enter number of vertexes" << std::endl;
+    std::cout << "Enter number of vertexes" << '\n';
     std::cin >> n;
 
-    auto nString = to_string(n);
-    DiskRecorder recorder = DiskRecorder();
-    recorder.initialize();
+    auto nString = std::to_string(n);
+    auto recorder = DiskRecorder();
 
-    auto pair_vertices = vector<pair<int, int>>();
+    auto pair_vertices = std::vector<std::pair<int, int>>();
 
     for (auto i = 0; i < n; ++i) {
         for (auto j = i; j < n; ++j) {
-            pair_vertices.push_back(make_pair(i, j));
+            pair_vertices.push_back(std::make_pair(i, j));
         }
     }
 
-    vector<size_t> indices(n, 0);
+    std::vector<size_t> indices(n, 0);
 
     bool done = false;
     auto count = 0;
@@ -90,7 +86,7 @@ int main() {
         }
 
         if (!skip) {
-            auto vis = new vector(n, -1);
+            auto vis = new std::vector(n, -1);
             int acc = 2 * 3 * 5 * 7 * 11;
             if (countStrongComponents(graph) == 1) {
                 if (!isAperiodic(graph, 0, 0, *vis, acc)) {
@@ -121,6 +117,6 @@ int main() {
         }
     }
 
-    cout << count << endl;
+    std::cout << count << '\n';
     return 0;
 }
