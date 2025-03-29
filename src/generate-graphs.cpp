@@ -11,7 +11,7 @@
 #include <Filters/Predicates/Predicates.h>
 
 int main() {
-    auto recorder = DiskRecorder();
+    auto recorder = NoRecorder<Graph>();
     auto generator = RandomTwoOutgoingEdges();
     auto filter = SimpleFilter(std::vector<std::function<bool(Graph)>> {
         isStrongConnected,

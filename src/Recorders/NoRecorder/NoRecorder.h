@@ -7,9 +7,10 @@
 
 #include "Recorders/IRecorder.h"
 
-class NoRecorder : public IRecorder  {
+template<typename GraphType>
+class NoRecorder : public IRecorder<GraphType>  {
 public:
-    void recordGraph(const Graph& g) override;
+    void recordGraph(const GraphType& g) override;
 };
 
 

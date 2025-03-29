@@ -5,7 +5,8 @@
 
 #include "Recorders/IRecorder.h"
 
-class DiskRecorder : public IRecorder {
+template<typename GraphType>
+class DiskRecorder : public IRecorder<GraphType> {
 private:
     static const std::filesystem::path GRAPH_DIR;
     std::string subDirectory;
@@ -13,7 +14,7 @@ private:
     std::size_t graphCount = 0;
 public:
     DiskRecorder();
-    void recordGraph(const Graph& g) override;
+    void recordGraph(const GraphType& g) override;
 };
 
 #endif

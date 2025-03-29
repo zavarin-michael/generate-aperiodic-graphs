@@ -1,10 +1,13 @@
 #include "DiskRecorder.h"
 #include <filesystem>
 #include <boost/graph/graphviz.hpp>
+#include <types/types.h>
 
-const std::filesystem::path DiskRecorder::GRAPH_DIR{"./graphs/"};
+template<class GraphType>
+const std::filesystem::path DiskRecorder<GraphType>::GRAPH_DIR{"./graphs/"};
 
-DiskRecorder::DiskRecorder() {
+template<class GraphType>
+DiskRecorder<GraphType>::DiskRecorder() {
     std::cout << "\n"
               << "+=====================================+\n"
               << "|     INITIALIZATION OF RECOREDER     |\n"
@@ -19,7 +22,8 @@ DiskRecorder::DiskRecorder() {
     create_directories(dirPath);
 }
 
-void DiskRecorder::recordGraph(const Graph& g) {
+template<class GraphType>
+void DiskRecorder<GraphType>::recordGraph(const GraphType& g) {
     const auto filename{std::to_string(graphCount) + ".dot"};
     std::filesystem::path filePath = GRAPH_DIR / subDirectory / filename;
 
@@ -35,3 +39,6 @@ void DiskRecorder::recordGraph(const Graph& g) {
     write_graphviz(ofs, g);
     graphCount++;
 }
+
+template class DiskRecorder<Graph>;
+template class DiskRecorder<Automata>;
