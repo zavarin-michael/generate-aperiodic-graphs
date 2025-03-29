@@ -5,13 +5,17 @@
 const std::filesystem::path DiskRecorder::GRAPH_DIR{"./graphs/"};
 
 DiskRecorder::DiskRecorder() {
-    std::cout << "|---------------------------|" << '\n' <<
-                 "|INITIALIZATION OF RECOREDER|" << '\n' <<
-                 "|---------------------------|" << '\n' << '\n' <<
-                 "Enter sub directory name:" << '\n';
-    std::cin >> subDirectory;
+    std::cout << "\n"
+              << "+=====================================+\n"
+              << "|     INITIALIZATION OF RECOREDER     |\n"
+              << "+=====================================+\n\n";
+    std::cout << std::left << "-> Enter sub directory name: ";
+    std::getline(std::cin, subDirectory);
 
     const std::filesystem::path dirPath = GRAPH_DIR / subDirectory;
+    if (exists(dirPath)) {
+        remove_all(dirPath);
+    }
     create_directories(dirPath);
 }
 
