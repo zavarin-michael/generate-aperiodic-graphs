@@ -1,19 +1,31 @@
-#include "TwoOutgoingEdges.h"
+#include "AllTwoOutgoingEdges.h"
+
+#include <iostream>
 
 #include "types/types.h"
 
-TwoOutgoingEdges::TwoOutgoingEdges(const int vertexes_count) {
-    this->vertexes_count = vertexes_count;
+AllTwoOutgoingEdges::AllTwoOutgoingEdges() {
+    std::string input;
+    std::cout << "\n"
+              << "+=====================================+\n"
+              << "|        GENERATOR INITIALIZATION     |\n"
+              << "+=====================================+\n\n";
+
+    std::cout << std::left << "-> Enter number of vertexes]: ";
+    std::getline(std::cin, input);
+    if (!input.empty()) {
+        vertexes_count = parsePositiveInt(input, "Vertexes count");
+    }
 }
 
-GraphCoroutine::pull_type TwoOutgoingEdges::generateGraphs() {
+GraphCoroutine::pull_type AllTwoOutgoingEdges::generateGraphs() {
     auto n = vertexes_count;
     return GraphCoroutine::pull_type([n](GraphCoroutine::push_type& yield) {
         auto pair_vertices = std::vector<std::pair<int, int>>();
 
         for (auto i = 0; i < n; ++i) {
             for (auto j = i; j < n; ++j) {
-                pair_vertices.push_back(std::make_pair(i, j));
+                pair_vertices.emplace_back(i, j);
             }
         }
 
@@ -53,3 +65,11 @@ GraphCoroutine::pull_type TwoOutgoingEdges::generateGraphs() {
     });
 }
 
+int AllTwoOutgoingEdges::parsePositiveInt(const std::string& input, const std::string& field_name) {
+    std::istringstream iss(input);
+    int value;
+    if (!(iss >> value) || value <= 0) {
+        throw std::invalid_argument("Invalid input for \"" + field_name + "\": must be a positive integer.");
+    }
+    return value;
+}

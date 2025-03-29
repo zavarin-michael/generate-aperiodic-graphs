@@ -8,7 +8,9 @@ add_executable(generate_aperiodic_graphs
         src/main.cpp
         src/Recorders/DiskRecorder/DiskRecorder.cpp
         src/Recorders/ConsoleRecorder/ConsoleRecorder.cpp
-        src/Generators/TwoOutgoingEdges/TwoOutgoingEdges.cpp
+        src/Recorders/NoRecorder/NoRecorder.cpp
+        src/Generators/AllTwoOutgoingEdges/AllTwoOutgoingEdges.cpp
+        src/Generators/RandomTwoOutgoingEdges/RandomTwoOutgoingEdges.cpp
         src/Filters/SimpleFilter/SimpleFilter.cpp
         src/Filters/Predicates/Predicates.cpp
 )
