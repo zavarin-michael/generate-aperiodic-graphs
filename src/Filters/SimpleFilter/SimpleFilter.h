@@ -4,12 +4,13 @@
 #include "Filters/IFilter.h"
 #include "vector"
 
-class SimpleFilter : public IFilter {
+template <typename GraphType>
+class SimpleFilter : public IFilter<GraphType> {
 private:
-  std::vector<std::function<bool(Graph)>> predicates;
+  std::vector<std::function<bool(GraphType)>> predicates;
 public:
-  bool isAccepted(Graph g) override;
-  SimpleFilter(std::vector<std::function<bool(Graph)>> predicates);
+  bool isAccepted(GraphType& g) override;
+  SimpleFilter(std::vector<std::function<bool(GraphType)>> predicates);
 };
 
 #endif

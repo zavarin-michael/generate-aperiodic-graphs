@@ -1,13 +1,18 @@
 #include "SimpleFilter.h"
 #include <types/types.h>
 
-SimpleFilter::SimpleFilter(std::vector<std::function<bool(Graph)>> predicates) {
+template <typename GraphType>
+SimpleFilter<GraphType>::SimpleFilter(std::vector<std::function<bool(GraphType)>> predicates) {
   this->predicates = predicates;
 };
 
-bool SimpleFilter::isAccepted(Graph graph) {
+template <typename GraphType>
+bool SimpleFilter<GraphType>::isAccepted(GraphType& graph) {
   for (auto filter : this->predicates) {
     if (!filter(graph)) return false;
   }
   return true;
 }
+
+template class SimpleFilter<Graph>;
+template class SimpleFilter<Automata>;
