@@ -1,5 +1,11 @@
 #include "NoRecorder.h"
 
-void NoRecorder::recordGraph(const Graph& g) {
+#include <types/types.h>
+
+template<class GraphType>
+void NoRecorder<GraphType>::recordGraph(const GraphType& g) {
     return;
 }
+
+template class NoRecorder<Graph>;
+template class NoRecorder<Automata>;

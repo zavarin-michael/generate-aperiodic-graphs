@@ -1,12 +1,10 @@
 #ifndef IRECORDER_H
 #define IRECORDER_H
 
-
-#include "types/types.h"
-
+template <typename GraphType>
 class IRecorder {
 public:
-    virtual void recordGraph(const Graph& g) = 0;
+    virtual void recordGraph(const GraphType& g) = 0;
     virtual ~IRecorder() = default;
 };
 

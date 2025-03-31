@@ -3,9 +3,10 @@
 
 #include "Recorders/IRecorder.h"
 
-class ConsoleRecorder : public IRecorder {
+template<typename GraphType>
+class ConsoleRecorder : public IRecorder<GraphType> {
 public:
-    void recordGraph(const Graph& g) override;
+    void recordGraph(const GraphType& g) override;
 };
 
 #endif //CONSOLERECORDER_H
