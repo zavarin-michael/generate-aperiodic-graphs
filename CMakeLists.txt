@@ -14,15 +14,27 @@ add_executable(
         src/Generators/RandomTwoOutgoingEdges/RandomTwoOutgoingEdges.cpp
         src/Filters/SimpleFilter/SimpleFilter.cpp
         src/Filters/Predicates/Predicates.cpp
-        src/Readers/IReader.h
-        src/analyze-automatas.cpp
+        src/Generators/Functions/Functions.cpp
 )
 add_executable(
         generate_automatas
         src/generate-automatas.cpp
         src/Readers/SingleGraphReader/SingleGraphReader.cpp
         src/Recorders/ConsoleRecorder/ConsoleRecorder.cpp
+        src/Generators/Functions/Functions.cpp
+)
+add_executable(
+        analyze_automatas
+        src/analyze-automatas.cpp
+        src/Readers/SingleGraphReader/SingleGraphReader.cpp
+        src/Filters/SimpleFilter/SimpleFilter.cpp
+        src/Filters/Predicates/Predicates.cpp
+        src/Generators/Functions/Functions.cpp
+        src/Recorders/DiskRecorder/DiskRecorder.tpp
+        src/Recorders/ConsoleRecorder/ConsoleRecorder.cpp
+        src/Recorders/NoRecorder/NoRecorder.cpp
 )
 target_link_libraries(generate_aperiodic_graphs boost::boost)
 target_link_libraries(generate_automatas boost::boost)
+target_link_libraries(analyze_automatas boost::boost)
 include_directories(${CMAKE_SOURCE_DIR}/src)

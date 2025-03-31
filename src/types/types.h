@@ -23,5 +23,6 @@ using Automata = boost::adjacency_list<
     VertexProperties,
     EdgeProperties
 >;
+using AutomataCoroutine = boost::coroutines2::coroutine<std::pair<int, Automata&>>;
 
 #endif

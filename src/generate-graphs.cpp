@@ -12,15 +12,16 @@
 
 int main() {
     auto recorder = DiskRecorder<Graph>("./graphs/");
-    auto generator = RandomTwoOutgoingEdges();
+    // auto generator = RandomTwoOutgoingEdges();
+    auto generator = AllTwoOutgoingEdges();
     auto filter = SimpleFilter(std::vector<std::function<bool(Graph)>> {
         isStrongConnected,
-        isAperiodic,
-        // isNotAperiodic,
+        isNotAperiodic,
+        // isAperiodic,
     });
     auto count = 0;
 
-    for (const auto& graph : generator.generateGraphs()) {
+    for (auto& graph : generator.generateGraphs()) {
         if (filter.isAccepted(graph)) {
             recorder.recordGraph(graph);
             count++;
