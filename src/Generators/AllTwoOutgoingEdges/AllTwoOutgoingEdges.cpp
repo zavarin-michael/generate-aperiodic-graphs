@@ -11,7 +11,7 @@ AllTwoOutgoingEdges::AllTwoOutgoingEdges() {
               << "|        GENERATOR INITIALIZATION     |\n"
               << "+=====================================+\n\n";
 
-    std::cout << std::left << "-> Enter number of vertexes]: ";
+    std::cout << std::left << "-> Enter number of vertexes: ";
     std::getline(std::cin, input);
     if (!input.empty()) {
         vertexes_count = parsePositiveInt(input, "Vertexes count");
@@ -41,6 +41,11 @@ GraphCoroutine::pull_type AllTwoOutgoingEdges::generateGraphs() {
 
                 add_edge(i, u, graph);
                 add_edge(i, v, graph);
+            }
+
+            auto [vi, vi_end] = boost::vertices(graph);
+            for (auto it = vi; it != vi_end; ++it) {
+                graph[*it].node_id = *it;
             }
 
             yield(graph);

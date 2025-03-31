@@ -8,13 +8,18 @@
 template<typename GraphType>
 class DiskRecorder : public IRecorder<GraphType> {
 private:
-    static const std::filesystem::path GRAPH_DIR;
-    std::string subDirectory;
-    bool isRewriteFiles = true;
+    std::string filename;
+    bool isRewriteFiles;
     std::size_t graphCount = 0;
 public:
-    DiskRecorder();
+    std::filesystem::path dirPath;
+    explicit DiskRecorder(const std::filesystem::path &rootDir, std::filesystem::path subDirs = "", bool isRewriteFiles = true);
     void recordGraph(const GraphType& g) override;
+    DiskRecorder setFilename(const std::string& filename);
+    DiskRecorder setDirPath(std::filesystem::path dirPath);
+    void writeGraph(std::ofstream &ofs, const GraphType &g);
 };
+
+#include "DiskRecorder.tpp"
 
 #endif

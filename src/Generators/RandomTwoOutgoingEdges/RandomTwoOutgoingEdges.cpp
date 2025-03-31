@@ -59,6 +59,11 @@ GraphCoroutine::pull_type RandomTwoOutgoingEdges::generateGraphs() {
                 } while (run);
             }
 
+            auto [vi, vi_end] = boost::vertices(graph);
+            for (auto it = vi; it != vi_end; ++it) {
+                graph[*it].node_id = *it;
+            }
+
             yield(graph);
         }
     });

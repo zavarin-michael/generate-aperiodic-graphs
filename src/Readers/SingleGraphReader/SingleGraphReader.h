@@ -2,11 +2,16 @@
 #define SINGLEGRAPHREADER_H
 
 #include <types/types.h>
+#include <fstream>
+#include "Readers/IReader.h"
 
-
-class SingleGraphReader {
+template <typename GraphType>
+class SingleGraphReader: public IReader<GraphType> {
+private:
+    std::ifstream file;
 public:
-    Graph readGraph(const std::filesystem::path& filepath);
+    SingleGraphReader(std::filesystem::path filepath = "");
+    GraphType readGraph();
 };
 
 
