@@ -4,7 +4,7 @@
 
 
 template<>
-void ConsoleRecorder<Graph>::recordGraph(const Graph& g) {
+void ConsoleRecorder<Graph>::recordGraph(Graph& g) {
     std::cout << "Graph:" << '\n';
     for (int v = 0; v < g.m_vertices.size(); ++v) {
         std::cout << v << ": ";
@@ -19,7 +19,7 @@ void ConsoleRecorder<Graph>::recordGraph(const Graph& g) {
 }
 
 template<>
-void ConsoleRecorder<Automata>::recordGraph(const Automata& g) {
+void ConsoleRecorder<Automata>::recordGraph(Automata& g) {
     std::cout << "Graph:" << '\n';
     for (int v = 0; v < g.m_vertices.size(); ++v) {
         std::cout << v << ": ";

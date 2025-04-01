@@ -16,8 +16,8 @@ int main() {
     auto generator = AllTwoOutgoingEdges();
     auto filter = SimpleFilter(std::vector<std::function<bool(Graph)>> {
         isStrongConnected,
-        isNotAperiodic,
-        // isAperiodic,
+        // isNotAperiodic,
+        isAperiodic,
     });
     auto count = 0;
 

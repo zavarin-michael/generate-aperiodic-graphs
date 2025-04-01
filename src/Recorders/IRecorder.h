@@ -4,7 +4,7 @@
 template <typename GraphType>
 class IRecorder {
 public:
-    virtual void recordGraph(const GraphType& g) = 0;
+    virtual void recordGraph(GraphType& g) = 0;
     virtual ~IRecorder() = default;
 };
 

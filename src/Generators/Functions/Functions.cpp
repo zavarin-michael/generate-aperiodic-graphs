@@ -4,7 +4,9 @@
 AutomataCoroutine::pull_type makeAutomatasFromGraph(Graph& original) {
    return AutomataCoroutine::pull_type([original](AutomataCoroutine::push_type& yield) {
       for (int mask = 0; mask < 1 << original.m_vertices.size(); mask++) {
-          Automata labeled;
+          auto copy = std::make_shared<Automata>();
+          auto& labeled = *copy;
+
           std::map<Graph::vertex_descriptor, Automata::vertex_descriptor> vertex_map;
 
           // vertexes copy
@@ -28,7 +30,7 @@ AutomataCoroutine::pull_type makeAutomatasFromGraph(Graph& original) {
               labeled[*it].node_id = *it;
           }
 
-          yield(std::make_pair(mask, std::ref(labeled)));
+          yield(std::make_pair(mask, copy));
       }
    });
 }

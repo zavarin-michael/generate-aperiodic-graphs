@@ -14,18 +14,12 @@ int main() {
     auto recorder = DiskRecorder<Automata>("./automatas/");
     auto g = reader.readGraph();
 
-    for (auto automata : makeAutomatasFromGraph(g)) {
-        recorder.recordGraph(automata.second);
+    for (auto [mask, automata_ptr] : makeAutomatasFromGraph(g)) {
+        auto& automata = *automata_ptr;
+        recorder.recordGraph(automata);
     }
 
     DiskRecorder<Graph>(recorder.dirPath, "./", false)
     .setFilename("graph.dot")
     .recordGraph(g);
-
-    auto reader2 = SingleGraphReader<Automata>("./automatas/4/0.dot");
-    auto automata = reader2.readGraph();
-
-    DiskRecorder<Automata>(recorder.dirPath, "./", false)
-    .setFilename("new_graph.dot")
-    .recordGraph(automata);
 }

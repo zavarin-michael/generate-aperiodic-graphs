@@ -14,10 +14,10 @@ private:
 public:
     std::filesystem::path dirPath;
     explicit DiskRecorder(const std::filesystem::path &rootDir, std::filesystem::path subDirs = "", bool isRewriteFiles = true);
-    void recordGraph(const GraphType& g) override;
+    void recordGraph(GraphType& g) override;
     DiskRecorder setFilename(const std::string& filename);
     DiskRecorder setDirPath(std::filesystem::path dirPath);
-    void writeGraph(std::ofstream &ofs, const GraphType &g);
+    void writeGraph(std::ofstream &ofs, GraphType &g);
 };
 
 #include "DiskRecorder.tpp"

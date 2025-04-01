@@ -27,20 +27,32 @@ DiskRecorder<GraphType>::DiskRecorder(const std::filesystem::path &rootDir, std:
 }
 
 template<>
-inline void DiskRecorder<Graph>::writeGraph(std::ofstream &ofs, const Graph& g) {
-    write_graphviz(ofs, g,
-        boost::make_label_writer(boost::get(&VertexProperties::node_id, g)));
+inline void DiskRecorder<Graph>::writeGraph(std::ofstream &ofs, Graph& g) {
+    boost::dynamic_properties dp;
+    dp.property("fillcolor", get(&VertexProperties::fillcolor, g));
+    dp.property("node_id", get(&VertexProperties::node_id, g));
+    dp.property("style",
+        boost::make_constant_property<Graph::vertex_descriptor>(std::string("filled"))
+    );
+
+    write_graphviz_dp(ofs, g, dp);
 }
 
 template<>
-inline void DiskRecorder<Automata>::writeGraph(std::ofstream &ofs, const Automata& g) {
-    write_graphviz(ofs, g,
-    boost::make_label_writer(boost::get(&VertexProperties::node_id, g)),
-        boost::make_label_writer(boost::get(&EdgeProperties::mark, g)));
+inline void DiskRecorder<Automata>::writeGraph(std::ofstream &ofs, Automata& g) {
+    boost::dynamic_properties dp;
+    dp.property("fillcolor", get(&VertexProperties::fillcolor, g));
+    dp.property("node_id", get(&VertexProperties::node_id, g));
+    dp.property("label", get(&EdgeProperties::mark, g));
+    dp.property("style",
+        boost::make_constant_property<Graph::vertex_descriptor>(std::string("filled"))
+    );
+
+    write_graphviz_dp(ofs, g, dp);
 }
 
 template<class GraphType>
-void DiskRecorder<GraphType>::recordGraph(const GraphType& g) {
+void DiskRecorder<GraphType>::recordGraph(GraphType& g) {
     std::string filename;
     if (this->filename.empty()) {
         filename = std::to_string(graphCount) + ".dot";
