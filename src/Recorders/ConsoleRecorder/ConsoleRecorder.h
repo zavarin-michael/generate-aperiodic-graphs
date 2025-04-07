@@ -6,7 +6,7 @@
 template<typename GraphType>
 class ConsoleRecorder : public IRecorder<GraphType> {
 public:
-    void recordGraph(const GraphType& g) override;
+    void recordGraph(GraphType& g) override;
 };
 
 #endif //CONSOLERECORDER_H

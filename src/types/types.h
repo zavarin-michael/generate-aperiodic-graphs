@@ -6,6 +6,7 @@
 
 struct VertexProperties {
     long long node_id;
+    std::string fillcolor;
 };
 
 using Graph = boost::adjacency_list<boost::vecS, boost::vecS, boost::directedS, VertexProperties>;
@@ -23,6 +24,6 @@ using Automata = boost::adjacency_list<
     VertexProperties,
     EdgeProperties
 >;
-using AutomataCoroutine = boost::coroutines2::coroutine<std::pair<int, Automata&>>;
+using AutomataCoroutine = boost::coroutines2::coroutine<std::pair<int, std::shared_ptr<Automata>>>;
 
 #endif

@@ -7,6 +7,7 @@
 class AllTwoOutgoingEdges : public IGenerator {
 private:
     size_t vertexes_count{};
+    bool with_self_loops{true};
     int parsePositiveInt(const std::string& input, const std::string& field_name);
 public:
     AllTwoOutgoingEdges();

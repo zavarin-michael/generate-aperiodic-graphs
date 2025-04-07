@@ -16,11 +16,17 @@ AllTwoOutgoingEdges::AllTwoOutgoingEdges() {
     if (!input.empty()) {
         vertexes_count = parsePositiveInt(input, "Vertexes count");
     }
+
+    std::cout << std::left << "-> With self loops [" << (with_self_loops ? "true" : "false") << "]: ";
+    std::getline(std::cin, input);
+    if (!input.empty()) {
+        with_self_loops = !(input == "false");
+    }
 }
 
 GraphCoroutine::pull_type AllTwoOutgoingEdges::generateGraphs() {
     auto n = vertexes_count;
-    return GraphCoroutine::pull_type([n](GraphCoroutine::push_type& yield) {
+    return GraphCoroutine::pull_type([n, this](GraphCoroutine::push_type& yield) {
         auto pair_vertices = std::vector<std::pair<int, int>>();
 
         for (auto i = 0; i < n; ++i) {
@@ -48,7 +54,17 @@ GraphCoroutine::pull_type AllTwoOutgoingEdges::generateGraphs() {
                 graph[*it].node_id = *it;
             }
 
-            yield(graph);
+            bool has_loops = std::any_of(
+                boost::edges(graph).first,
+                boost::edges(graph).second,
+                [&](auto e) {
+                    return boost::source(e, graph) == boost::target(e, graph);
+                }
+            );
+
+            if (!has_loops || with_self_loops) {
+                yield(graph);
+            }
 
             for (int i = n - 1; i >= 0; --i) {
                 if (indices[i] < pair_vertices.size() - 1) {
