@@ -3,9 +3,12 @@
 
 #include "types/types.h"
 
+template <typename GraphType>
 class IGenerator {
 public:
-    virtual GraphCoroutine::pull_type generateGraphs() = 0;
+    using pull_type = typename GeneratorTraits<GraphType>::pull_type;
+
+    virtual pull_type generateGraphs() = 0;
     virtual ~IGenerator() = default;
 };
 

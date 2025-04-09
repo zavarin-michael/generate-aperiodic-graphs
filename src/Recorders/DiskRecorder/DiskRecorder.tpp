@@ -6,14 +6,24 @@
 #include <types/types.h>
 
 template<class GraphType>
-DiskRecorder<GraphType>::DiskRecorder(const std::filesystem::path &rootDir, std::filesystem::path subDirs, bool isRewriteFiles) {
+DiskRecorder<GraphType>::DiskRecorder(std::filesystem::path rootDir, std::filesystem::path subDirs, bool isRewriteFiles) {
     this->isRewriteFiles = isRewriteFiles;
-    if (subDirs.empty()) {
-        std::string subDirStr;
-        std::cout << "\n"
-                  << "+=====================================+\n"
+
+    if (rootDir.empty() || subDirs.empty()) {
+        std::cout << "+=====================================+\n"
                   << "|     INITIALIZATION OF RECOREDER     |\n"
                   << "+=====================================+\n\n";
+    }
+
+    if (rootDir.empty()) {
+        std::string rootDirStr;
+        std::cout << std::left << "-> Enter root directory name: ";
+        std::getline(std::cin, rootDirStr);
+        rootDir = std::filesystem::path(rootDirStr);
+    }
+
+    if (subDirs.empty()) {
+        std::string subDirStr;
         std::cout << std::left << "-> Enter sub directory name: ";
         std::getline(std::cin, subDirStr);
         subDirs = std::filesystem::path(subDirStr);

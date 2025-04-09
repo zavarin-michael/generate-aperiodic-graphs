@@ -4,14 +4,17 @@
 #include "Generators/IGenerator.h"
 
 
-class AllTwoOutgoingEdges : public IGenerator {
+template <typename GraphType>
+class AllTwoOutgoingEdges : public IGenerator<GraphType> {
 private:
     size_t vertexes_count{};
     bool with_self_loops{true};
-    int parsePositiveInt(const std::string& input, const std::string& field_name);
+    static int parsePositiveInt(const std::string& input, const std::string& field_name);
 public:
+    using pull_type = typename GeneratorTraits<GraphType>::pull_type;
+
     AllTwoOutgoingEdges();
-    GraphCoroutine::pull_type generateGraphs() override;
+    pull_type generateGraphs() override;
 };
 
 

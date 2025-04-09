@@ -24,6 +24,18 @@ using Automata = boost::adjacency_list<
     VertexProperties,
     EdgeProperties
 >;
-using AutomataCoroutine = boost::coroutines2::coroutine<std::pair<int, std::shared_ptr<Automata>>>;
+using AutomataCoroutine = boost::coroutines2::coroutine<Automata&>;
+
+struct AutomataGenerationResult {
+    int mask;
+    std::shared_ptr<Automata> automata;
+};
+
+using AutomataPairCoroutine = boost::coroutines2::coroutine<AutomataGenerationResult&>;
+
+template<typename GraphType>
+struct GeneratorTraits {
+    using pull_type = boost::coroutines2::coroutine<GraphType&>::pull_type;
+};
 
 #endif

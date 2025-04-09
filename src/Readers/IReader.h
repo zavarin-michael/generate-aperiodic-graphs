@@ -1,10 +1,12 @@
 #ifndef IREADER_H
 #define IREADER_H
 
+#include "types/types.h"
+
 template <typename GraphType>
 class IReader {
 public:
-    virtual GraphType readGraph() = 0;
+    virtual boost::coroutines2::coroutine<GraphType&>::pull_type read() = 0;
     virtual ~IReader() = default;
 };
 

@@ -4,22 +4,29 @@
 #include <Readers/SingleGraphReader/SingleGraphReader.h>
 #include <Recorders/ConsoleRecorder/ConsoleRecorder.h>
 #include <Recorders/DiskRecorder/DiskRecorder.h>
-#include <Generators/Functions/Functions.h>
 
+#include "Generators/AutomatasFromGraph/AutomatasFromGraph.h"
+#include "Recorders/Utils/Copy.h"
+#include "Selectors/Selectors.h"
 #include "types/types.h"
 
 int main() {
     auto reader = SingleGraphReader<Graph>();
     // auto recorder = ConsoleRecorder<Automata>();
-    auto recorder = DiskRecorder<Automata>("./automatas/");
-    auto g = reader.readGraph();
+    auto recorder = getRecorder<Automata>(
+        [] {return new DiskRecorder<Automata>("./automatas/");},
+        "DiskRecorder(./automatas/)"
+    );
 
-    for (auto [mask, automata_ptr] : makeAutomatasFromGraph(g)) {
-        auto& automata = *automata_ptr;
-        recorder.recordGraph(automata);
+    auto g = *reader.read().begin();
+    auto generator = AutomatasFromGraph<AutomataGenerationResult>(g);
+
+    for (auto [mask, automata_ptr] : generator.generateGraphs()) {
+        recorder->recordGraph(*automata_ptr);
     }
 
-    DiskRecorder<Graph>(recorder.dirPath, "./", false)
+    auto copy = *Copy<DiskRecorder<Graph>, Automata>(recorder);
+    copy
     .setFilename("graph.dot")
     .recordGraph(g);
 }

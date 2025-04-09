@@ -3,10 +3,15 @@
 
 #include <types/types.h>
 
-bool isStrongConnected(const Graph& graph);
-bool isAperiodic(const Graph& graph);
-bool isNotAperiodic(const Graph& graph);
+template <typename GraphType>
+bool isStrongConnected(const GraphType& graph);
+template <typename GraphType>
+bool isAperiodic(const GraphType& graph);
+template <typename GraphType>
+bool isNotAperiodic(const GraphType& graph);
 bool isSynchronized(const Automata& graph);
 std::pair<Graph, std::set<Graph::vertex_descriptor>> getBisetGraph(const Automata& automata);
+
+#include "Predicates.tpp"
 
 #endif

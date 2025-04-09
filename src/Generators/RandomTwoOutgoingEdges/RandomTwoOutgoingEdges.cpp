@@ -4,7 +4,18 @@
 #include <random>
 #include "types/types.h"
 
-RandomTwoOutgoingEdges::RandomTwoOutgoingEdges() {
+template<>
+int RandomTwoOutgoingEdges<Graph>::parsePositiveInt(const std::string& input, const std::string& field_name) {
+    std::istringstream iss(input);
+    int value;
+    if (!(iss >> value) || value <= 0) {
+        throw std::invalid_argument("Invalid input for \"" + field_name + "\": must be a positive integer.");
+    }
+    return value;
+}
+
+template <>
+RandomTwoOutgoingEdges<Graph>::RandomTwoOutgoingEdges() {
     std::string input;
     std::cout << "\n"
               << "+=====================================+\n"
@@ -30,11 +41,12 @@ RandomTwoOutgoingEdges::RandomTwoOutgoingEdges() {
     }
 }
 
-GraphCoroutine::pull_type RandomTwoOutgoingEdges::generateGraphs() {
-    return GraphCoroutine::pull_type([this](GraphCoroutine::push_type& yield) {
+template <>
+GraphCoroutine::pull_type RandomTwoOutgoingEdges<Graph>::generateGraphs() {
+    return GraphCoroutine::pull_type([this](GraphCoroutine::push_type &yield) {
         std::random_device rd;
         std::mt19937 gen(rd());
-        auto pair_vertices = std::vector<std::pair<int, int>>();
+        auto pair_vertices = std::vector<std::pair<int, int> >();
 
         for (auto i = 0; i < this->vertexes_count; ++i) {
             for (auto j = i; j < this->vertexes_count; ++j) {
@@ -69,11 +81,4 @@ GraphCoroutine::pull_type RandomTwoOutgoingEdges::generateGraphs() {
     });
 }
 
-int RandomTwoOutgoingEdges::parsePositiveInt(const std::string& input, const std::string& field_name) {
-    std::istringstream iss(input);
-    int value;
-    if (!(iss >> value) || value <= 0) {
-        throw std::invalid_argument("Invalid input for \"" + field_name + "\": must be a positive integer.");
-    }
-    return value;
-}
+template class RandomTwoOutgoingEdges<Graph>;
