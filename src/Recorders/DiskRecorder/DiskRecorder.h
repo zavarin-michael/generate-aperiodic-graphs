@@ -13,7 +13,7 @@ private:
     std::size_t graphCount = 0;
 public:
     std::filesystem::path dirPath;
-    explicit DiskRecorder(const std::filesystem::path &rootDir, std::filesystem::path subDirs = "", bool isRewriteFiles = true);
+    explicit DiskRecorder(std::filesystem::path rootDir = "", std::filesystem::path subDirs = "", bool isRewriteFiles = false);
     void recordGraph(GraphType& g) override;
     DiskRecorder setFilename(const std::string& filename);
     DiskRecorder setDirPath(std::filesystem::path dirPath);

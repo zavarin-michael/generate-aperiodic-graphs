@@ -10,20 +10,25 @@
 #include <Filters/SimpleFilter/SimpleFilter.h>
 #include <Filters/Predicates/Predicates.h>
 
+#include "Selectors/Selectors.h"
+
 int main() {
-    auto recorder = DiskRecorder<Graph>("./graphs/");
+    auto const recorder = getRecorder<Graph>(
+        [] { return new DiskRecorder<Graph>("./graphs/");},
+        "DiskRecorder(./graphs/)"
+    );
     // auto generator = RandomTwoOutgoingEdges();
-    auto generator = AllTwoOutgoingEdges();
-    auto filter = SimpleFilter(std::vector<std::function<bool(Graph)>> {
-        isStrongConnected,
-        // isNotAperiodic,
-        isAperiodic,
-    });
+    const auto generator = getGenerator<Graph>(
+        [] { return new AllTwoOutgoingEdges<Graph>();},
+        "AllTwoOutgoingEdges"
+    );
+
+    auto filter = SimpleFilter<Graph>(true);
     auto count = 0;
 
-    for (auto& graph : generator.generateGraphs()) {
+    for (auto& graph : generator->generateGraphs()) {
         if (filter.isAccepted(graph)) {
-            recorder.recordGraph(graph);
+            recorder->recordGraph(graph);
             count++;
         }
     }

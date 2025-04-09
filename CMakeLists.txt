@@ -5,36 +5,58 @@ find_package(Boost REQUIRED)
 set(CMAKE_CXX_STANDARD 20)
 
 add_executable(
-        generate_aperiodic_graphs
+        generate_graphs
         src/generate-graphs.cpp
         src/Recorders/DiskRecorder/DiskRecorder.tpp
         src/Recorders/ConsoleRecorder/ConsoleRecorder.cpp
         src/Recorders/NoRecorder/NoRecorder.cpp
         src/Generators/AllTwoOutgoingEdges/AllTwoOutgoingEdges.cpp
         src/Generators/RandomTwoOutgoingEdges/RandomTwoOutgoingEdges.cpp
-        src/Filters/SimpleFilter/SimpleFilter.cpp
-        src/Filters/Predicates/Predicates.cpp
-        src/Generators/Functions/Functions.cpp
+        src/Filters/SimpleFilter/SimpleFilter.tpp
+        src/Filters/Predicates/Predicates.tpp
+        src/Selectors/Selectors.h
+        src/Recorders/Utils/Copy.h
+        src/Readers/MultipleGraphsReaders/MultipleGraphsReader.cpp
+        src/Readers/MultipleGraphsReaders/MultipleGraphsReader.h
+        src/Readers/SingleGraphReader/SingleGraphReader.cpp
+        src/Readers/SingleGraphReader/SingleGraphReader.h
 )
 add_executable(
         generate_automatas
         src/generate-automatas.cpp
         src/Readers/SingleGraphReader/SingleGraphReader.cpp
         src/Recorders/ConsoleRecorder/ConsoleRecorder.cpp
-        src/Generators/Functions/Functions.cpp
+        src/Recorders/DiskRecorder/DiskRecorder.tpp
+        src/Generators/AllTwoOutgoingEdges/AllTwoOutgoingEdges.cpp
+        src/Generators/RandomTwoOutgoingEdges/RandomTwoOutgoingEdges.cpp
+        src/Recorders/NoRecorder/NoRecorder.cpp
+        src/Selectors/Selectors.h
+        src/Recorders/Utils/Copy.h
+        src/Generators/AutomatasFromGraph/AutomatasFromGraph.cpp
+        src/Generators/AutomatasFromGraph/AutomatasFromGraph.h
+        src/Readers/MultipleGraphsReaders/MultipleGraphsReader.cpp
+        src/Readers/MultipleGraphsReaders/MultipleGraphsReader.h
+        src/Readers/SingleGraphReader/SingleGraphReader.cpp
+        src/Readers/SingleGraphReader/SingleGraphReader.h
 )
 add_executable(
         analyze_automatas
         src/analyze-automatas.cpp
         src/Readers/SingleGraphReader/SingleGraphReader.cpp
-        src/Filters/SimpleFilter/SimpleFilter.cpp
-        src/Filters/Predicates/Predicates.cpp
-        src/Generators/Functions/Functions.cpp
+        src/Filters/SimpleFilter/SimpleFilter.tpp
         src/Recorders/DiskRecorder/DiskRecorder.tpp
         src/Recorders/ConsoleRecorder/ConsoleRecorder.cpp
         src/Recorders/NoRecorder/NoRecorder.cpp
+        src/Selectors/Selectors.h
+        src/Recorders/Utils/Copy.h
+        src/Generators/AutomatasFromGraph/AutomatasFromGraph.cpp
+        src/Generators/AutomatasFromGraph/AutomatasFromGraph.h
+        src/Readers/MultipleGraphsReaders/MultipleGraphsReader.cpp
+        src/Readers/MultipleGraphsReaders/MultipleGraphsReader.h
+        src/Readers/SingleGraphReader/SingleGraphReader.cpp
+        src/Readers/SingleGraphReader/SingleGraphReader.h
 )
-target_link_libraries(generate_aperiodic_graphs boost::boost)
+target_link_libraries(generate_graphs boost::boost)
 target_link_libraries(generate_automatas boost::boost)
 target_link_libraries(analyze_automatas boost::boost)
 include_directories(${CMAKE_SOURCE_DIR}/src)

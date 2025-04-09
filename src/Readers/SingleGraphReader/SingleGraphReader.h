@@ -10,8 +10,8 @@ class SingleGraphReader: public IReader<GraphType> {
 private:
     std::ifstream file;
 public:
-    SingleGraphReader(std::filesystem::path filepath = "");
-    GraphType readGraph();
+    SingleGraphReader(const std::filesystem::path& filepath = "");
+    boost::coroutines2::coroutine<GraphType&>::pull_type read();
 };
 
 

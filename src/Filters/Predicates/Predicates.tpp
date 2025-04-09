@@ -4,7 +4,8 @@
 #include <boost/graph/strong_components.hpp>
 #include <numeric>
 
-int gcdCycles(const Graph& graph, int v, int depth, std::vector<int> &visited, int acc) {
+template <typename GraphType>
+int gcdCycles(const GraphType& graph, int v, int depth, std::vector<int> &visited, int acc) {
     if (visited[v] != -1) {
         depth--;
         const auto diff = visited[v] - depth - 1;
@@ -21,17 +22,20 @@ int gcdCycles(const Graph& graph, int v, int depth, std::vector<int> &visited, i
     return acc;
 }
 
-bool isAperiodic(const Graph& graph) {
+template <typename GraphType>
+bool isAperiodic(const GraphType& graph) {
     auto vis = new std::vector(graph.m_vertices.capacity(), -1);
     int acc = 2 * 3 * 5 * 7 * 11;
     return gcdCycles(graph, 0, 0, *vis, acc) == 1;
 }
 
-bool isNotAperiodic(const Graph& graph) {
+template <typename GraphType>
+bool isNotAperiodic(const GraphType& graph) {
     return not isAperiodic(graph);
 }
 
-bool isStrongConnected(const Graph& graph) {
+template <typename GraphType>
+bool isStrongConnected(const GraphType& graph) {
     std::vector<int> component(num_vertices(graph));
     return strong_components(graph, make_iterator_property_map(component.begin(), get(boost::vertex_index, graph))) == 1;
 }
@@ -146,3 +150,12 @@ bool isSynchronized(const Automata& automata) {
     }
     return true;
 }
+
+template bool isStrongConnected(const Graph& graph);
+template bool isStrongConnected(const Automata& automata);
+
+template bool isAperiodic(const Graph& graph);
+template bool isAperiodic(const Automata& automata);
+
+template bool isNotAperiodic(const Graph& graph);
+template bool isNotAperiodic(const Automata& automata);

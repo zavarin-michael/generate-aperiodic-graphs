@@ -5,27 +5,62 @@
 #include <Readers/SingleGraphReader/SingleGraphReader.h>
 #include <Recorders/ConsoleRecorder/ConsoleRecorder.h>
 #include <Recorders/DiskRecorder/DiskRecorder.h>
-#include <Generators/Functions/Functions.h>
+#include <Selectors/GetRecorder.tpp>
+
+#include "Generators/AutomatasFromGraph/AutomatasFromGraph.h"
+#include "Selectors/GetReader.tpp"
 
 #include "types/types.h"
 
-void generateAutomatasGraph(Graph& g) {
+struct Analytics {
+    int synchronizedCount;
+    int nonSynchronizedCount;
+    int maxRepaintingStepsCount;
+    int id;
+};
+
+int findLongestToGreen(Graph& g) {
+    auto [vi, vi_end] = boost::vertices(g);
+
+    std::vector<int> distance(boost::num_vertices(g), INT_MAX);
+
+    std::queue<Graph::vertex_descriptor> q;
+
+    for (auto it = vi; it != vi_end; ++it) {
+        auto start = *it;
+
+        // Пропускаем зелёные вершины
+        if (g[start].fillcolor != "green") continue;
+
+        distance[start] = 0;
+
+        q.push(start);
+
+        while (!q.empty()) {
+            auto v = q.front();
+            q.pop();
+
+            auto [ai, ai_end] = boost::adjacent_vertices(v, g);
+            for (auto it_adj = ai; it_adj != ai_end; ++it_adj) {
+                auto u = *it_adj;
+
+                if (g[u].fillcolor != "green" && distance[u] > distance[v] + 1) {
+                    q.push(u);
+                    distance[u] = distance[v] + 1;
+                }
+            }
+        }
+    }
+
+    return *std::ranges::max_element(distance);
+}
+
+Analytics generateAutomatasGraph(Graph& g, IRecorder<Graph>& recorder, IFilter<Automata>& filter, int id) {
     auto n = g.m_vertices.size();
-
     Graph new_graph;
-
-    auto recorder = DiskRecorder<Graph>("./automatas-graphs/");
-    auto cr = ConsoleRecorder<Graph>();
-    cr.recordGraph(g);
-
-
-    auto filter = SimpleFilter(std::vector<std::function<bool(Automata)>> {
-        isSynchronized,
-    });
-
     std::map<int, Graph::vertex_descriptor> vertex_map;
 
-    for (int mask = 0; mask < 1 << g.m_vertices.size(); mask++) {
+    for (int mask = 0; mask < 1 << n; mask++) {
         auto v_new = boost::add_vertex(new_graph);
         vertex_map[mask] = v_new;
     }
@@ -35,8 +70,10 @@ void generateAutomatasGraph(Graph& g) {
         new_graph[*it].node_id = *it;
     }
 
+    auto generator = AutomatasFromGraph<AutomataGenerationResult>(g);
+
     size_t count = 0;
-    for (auto [mask, automata_ptr]  : makeAutomatasFromGraph(g)) {
+    for (auto [mask, automata_ptr]  : generator.generateGraphs()) {
         for (int i = 0; i < n; ++i) {
             unsigned int flipped = mask ^ (1 << i);
             boost::add_edge(vertex_map[mask], vertex_map[flipped], new_graph);
@@ -49,17 +86,50 @@ void generateAutomatasGraph(Graph& g) {
     }
 
     recorder.recordGraph(new_graph);
-    recorder.setFilename("graph.dot").recordGraph(g);
 
-    std::cout << count << std::endl;
+    Analytics result;
+    result.synchronizedCount = count;
+    result.nonSynchronizedCount = (1 << n - count);
+    result.maxRepaintingStepsCount = findLongestToGreen(new_graph);
+    result.id = id;
+    return result;
 }
 
 int main() {
     // auto reader = SingleGraphReader<Automata>("./automatas/4/0.dot");
-    auto reader = SingleGraphReader<Graph>();
-    // auto recorder = ConsoleRecorder<Automata>();
-    // auto recorder = DiskRecorder<Graph>("./analyzes/");
-    auto graph = reader.readGraph();
+    auto reader = getReader<Graph>(
+        [] {return new SingleGraphReader<Graph>();},
+        "SingleGraphReader<Graph>()"
+    );
+    auto graphs = reader->read();
 
-    generateAutomatasGraph(graph);
+    auto recorder = getRecorder<Graph>(
+        [] { return new DiskRecorder<Graph>("./automatas-graphs/");},
+        "DiskRecorder(./automatas-graphs/)"
+    );
+
+    auto filter = SimpleFilter(false, std::vector<std::function<bool(Automata)>> {
+        isSynchronized,
+    });
+
+    std::map<int, std::vector<int>> results;
+
+    for (int i = 0; i < 100; i++) {
+        results[i] = std::vector<int>();
+    }
+
+    int count = 0;
+    for (auto graph : graphs) {
+        auto info = generateAutomatasGraph(graph, *recorder, filter, count);
+        results[info.maxRepaintingStepsCount].push_back(info.id);
+        count++;
+    }
+
+    for (int i = 0; i < 10; i++) {
+        std::cout << i << ": " << results[i].size() << std::endl;
+        for (auto it = results[i].begin(); it != results[i].end(); ++it) {
+            std::cout << *it << " ";
+        }
+        std::cout << std::endl;
+    }
 }

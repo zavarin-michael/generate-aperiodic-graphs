@@ -6,7 +6,8 @@
 #include <filesystem>
 
 template<typename GraphType>
-SingleGraphReader<GraphType>::SingleGraphReader(std::filesystem::path filepath) {
+SingleGraphReader<GraphType>::SingleGraphReader(const std::filesystem::path& filepath) {
+    auto localFilepath = filepath;
     if (filepath.empty()) {
         std::string path;
         std::cout << "\n"
@@ -15,39 +16,43 @@ SingleGraphReader<GraphType>::SingleGraphReader(std::filesystem::path filepath) 
                   << "+=====================================+\n\n";
         std::cout << std::left << "-> Enter filename to read: ";
         std::getline(std::cin, path);
-        filepath = path;
+        localFilepath = path;
     }
 
-    this->file.open(filepath, std::ios::in);
+    this->file.open(localFilepath, std::ios::in);
     if (!this->file) {
-        throw std::runtime_error("Cannot open DOT file: " + filepath.string());
+        throw std::runtime_error("Cannot open DOT file: " + localFilepath.string());
     }
 }
 
 
 template<>
-Graph SingleGraphReader<Graph>::readGraph() {
-    Graph g;
-    boost::dynamic_properties dp(boost::ignore_other_properties);
-    if (!boost::read_graphviz(file, g, dp)) {
-        throw std::runtime_error("Failed to read DOT file");
-    }
-    return g;
+GraphCoroutine::pull_type SingleGraphReader<Graph>::read() {
+    return GraphCoroutine::pull_type([this](GraphCoroutine::push_type& yield) {
+        Graph g;
+        boost::dynamic_properties dp(boost::ignore_other_properties);
+        if (!boost::read_graphviz(file, g, dp)) {
+            throw std::runtime_error("Failed to read DOT file");
+        }
+        yield(g);
+    });
 }
 
 template<>
-Automata SingleGraphReader<Automata>::readGraph() {
-    Automata g;
+AutomataCoroutine::pull_type SingleGraphReader<Automata>::read() {
+    return AutomataCoroutine::pull_type([this](AutomataCoroutine::push_type& yield) {
+        Automata g;
 
-    boost::dynamic_properties dp;
-    dp.property("fillcolor", boost::get(&VertexProperties::node_id, g));
-    dp.property("node_id", boost::get(&VertexProperties::node_id, g));
-    dp.property("label", boost::get(&EdgeProperties::mark, g));
+        boost::dynamic_properties dp;
+        dp.property("fillcolor", boost::get(&VertexProperties::node_id, g));
+        dp.property("node_id", boost::get(&VertexProperties::node_id, g));
+        dp.property("label", boost::get(&EdgeProperties::mark, g));
 
-    if (!boost::read_graphviz(file, g, dp)) {
-        throw std::runtime_error("Failed to read DOT file");
-    }
-    return g;
+        if (!boost::read_graphviz(file, g, dp)) {
+            throw std::runtime_error("Failed to read DOT file");
+        }
+        yield(g);
+    });
 }
 
 template class SingleGraphReader<Graph>;
