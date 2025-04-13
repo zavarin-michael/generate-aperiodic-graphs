@@ -30,6 +30,10 @@ int main() {
         if (filter.isAccepted(graph)) {
             recorder->recordGraph(graph);
             count++;
+
+            if (count % 10000 == 0) {
+                std::cout << count << std::endl;
+            }
         }
     }
 

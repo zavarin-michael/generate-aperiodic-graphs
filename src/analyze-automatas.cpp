@@ -89,7 +89,7 @@ Analytics generateAutomatasGraph(Graph& g, IRecorder<Graph>& recorder, IFilter<A
 
     Analytics result;
     result.synchronizedCount = count;
-    result.nonSynchronizedCount = (1 << n - count);
+    result.nonSynchronizedCount = (1 << n) - count;
     result.maxRepaintingStepsCount = findLongestToGreen(new_graph);
     result.id = id;
     return result;
@@ -112,22 +112,40 @@ int main() {
         isSynchronized,
     });
 
-    std::map<int, std::vector<int>> results;
+    std::map<int, std::vector<int>> maxDistance;
+    std::map<int, std::vector<int>> nonSyncVertexes;
 
     for (int i = 0; i < 100; i++) {
-        results[i] = std::vector<int>();
+        maxDistance[i] = std::vector<int>();
+    }
+
+    for (int i = 0; i < 100; i++) {
+        nonSyncVertexes[i] = std::vector<int>();
     }
 
     int count = 0;
     for (auto graph : graphs) {
         auto info = generateAutomatasGraph(graph, *recorder, filter, count);
-        results[info.maxRepaintingStepsCount].push_back(info.id);
+        maxDistance[info.maxRepaintingStepsCount].push_back(info.id);
+        nonSyncVertexes[info.nonSynchronizedCount].push_back(info.id);
         count++;
+        if (count % 1000 == 0) {
+            std::cout << count << std::endl;
+        }
     }
 
     for (int i = 0; i < 10; i++) {
-        std::cout << i << ": " << results[i].size() << std::endl;
-        for (auto it = results[i].begin(); it != results[i].end(); ++it) {
+        std::cout << "MaxDistance statistics " << i << ": " << maxDistance[i].size() << std::endl;
+        for (auto it = maxDistance[i].begin(); it != maxDistance[i].end(); ++it) {
+            std::cout << *it << " ";
+        }
+        std::cout << std::endl;
+    }
+
+    std::cout << std::endl;
+    for (int i = 100; i >= 0; i--) {
+        std::cout << "NonSyncVertexes statistics " << i << ": " << nonSyncVertexes[i].size() << std::endl;
+        for (auto it = nonSyncVertexes[i].begin(); it != nonSyncVertexes[i].end(); ++it) {
             std::cout << *it << " ";
         }
         std::cout << std::endl;

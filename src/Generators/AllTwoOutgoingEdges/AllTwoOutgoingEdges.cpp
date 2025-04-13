@@ -1,6 +1,7 @@
 #include "AllTwoOutgoingEdges.h"
 
 #include <iostream>
+#include <boost/graph/copy.hpp>
 
 #include "types/types.h"
 
@@ -47,52 +48,67 @@ GraphCoroutine::pull_type AllTwoOutgoingEdges<Graph>::generateGraphs() {
             }
         }
 
-        std::vector<size_t> indices(n, 0);
+        std::vector<std::vector<std::pair<int, int>>> edges {
+            {{0, 1}, {0, 0}},
+            {{0, 1}, {0, 2}},
+            {{0, 1}, {0, 1}},
+        };
 
-        bool done = false;
+        for (auto cases : edges) {
+            std::vector<size_t> indices(n, 0);
 
-        while (true) {
-            auto graph = Graph(n);
+            auto initGraph = Graph(n);
 
-            for (int i = 0; i < n; ++i) {
-                auto [v, u] = pair_vertices[indices[i]];
-
-                add_edge(i, u, graph);
-                add_edge(i, v, graph);
+            for (auto j : cases) {
+                add_edge(j.first, j.second, initGraph);
             }
 
-            auto [vi, vi_end] = boost::vertices(graph);
-            for (auto it = vi; it != vi_end; ++it) {
-                graph[*it].node_id = *it;
-            }
+            bool done = false;
 
-            bool has_loops = std::any_of(
-                boost::edges(graph).first,
-                boost::edges(graph).second,
-                [&](auto e) {
-                    return boost::source(e, graph) == boost::target(e, graph);
+            while (true) {
+                Graph graph;
+                copy_graph(initGraph, graph);
+
+                for (int i = 1; i < n; ++i) {
+                    auto [v, u] = pair_vertices[indices[i]];
+
+                    add_edge(i, u, graph);
+                    add_edge(i, v, graph);
                 }
-            );
 
-            if (!has_loops || with_self_loops) {
-                yield(graph);
-            }
+                auto [vi, vi_end] = boost::vertices(graph);
+                for (auto it = vi; it != vi_end; ++it) {
+                    graph[*it].node_id = *it;
+                }
 
-            for (int i = n - 1; i >= 0; --i) {
-                if (indices[i] < pair_vertices.size() - 1) {
-                    indices[i]++;
-                    for (int j = i + 1; j < n; ++j) {
-                        indices[j] = 0;
+                bool has_loops = std::any_of(
+                    boost::edges(graph).first,
+                    boost::edges(graph).second,
+                    [&](auto e) {
+                        return boost::source(e, graph) == boost::target(e, graph);
                     }
+                );
+
+                if (!has_loops || with_self_loops) {
+                    yield(graph);
+                }
+
+                for (int i = n - 1; i > 0; --i) {
+                    if (indices[i] < pair_vertices.size() - 1) {
+                        indices[i]++;
+                        for (int j = i + 1; j < n; ++j) {
+                            indices[j] = 0;
+                        }
+                        break;
+                    }
+                    if (i == 1) {
+                        done = true;
+                    }
+                }
+
+                if (done) {
                     break;
                 }
-                if (i == 0) {
-                    done = true;
-                }
-            }
-
-            if (done) {
-                break;
             }
         }
     });
