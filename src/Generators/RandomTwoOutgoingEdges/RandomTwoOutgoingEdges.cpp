@@ -76,6 +76,10 @@ GraphCoroutine::pull_type RandomTwoOutgoingEdges<Graph>::generateGraphs() {
                 graph[*it].node_id = *it;
             }
 
+            if (i % 100 == 0) {
+                std::cout << i << "\n";
+            }
+
             yield(graph);
         }
     });

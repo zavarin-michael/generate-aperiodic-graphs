@@ -3,14 +3,53 @@
 #include <Filters/SimpleFilter/SimpleFilter.h>
 
 #include <Readers/SingleGraphReader/SingleGraphReader.h>
-#include <Recorders/ConsoleRecorder/ConsoleRecorder.h>
 #include <Recorders/DiskRecorder/DiskRecorder.h>
-#include <Selectors/GetRecorder.tpp>
-
 #include "Generators/AutomatasFromGraph/AutomatasFromGraph.h"
-#include "Selectors/GetReader.tpp"
+#include <Selectors/Selectors.h>
 
 #include "types/types.h"
+
+boost::coroutines2::coroutine<Graph&>::pull_type getGraphsToAnalyze() {
+    std::cout << "Select how to pass graphs to analyzer [1]" << std::endl;
+    std::cout << "1: from files" << std::endl;
+    std::cout << "2: from generator select" << std::endl;
+
+    std::string option;
+    std::getline(std::cin, option);
+
+    int choice = 0;
+    try {
+        choice = std::stoi(option);
+    } catch (...) {
+        choice = -1; // Invalid input
+    }
+
+    switch (choice) {
+        case 1:
+        case 2:
+            return GraphCoroutine::pull_type([](GraphCoroutine::push_type& yield) {
+                auto generator = getGenerator<Graph>(
+                    [] { return new AllTwoOutgoingEdges<Graph>();},
+                    "AllTwoOutgoingEdges"
+                );
+
+                auto filter = SimpleFilter<Graph>(true);
+
+                for (auto& graph : generator->generateGraphs()) {
+                    if (filter.isAccepted(graph)) {
+                        yield(graph);
+                    }
+                }
+            });
+        default:
+            std::cout << "Invalid option. Defaulting to file select" << std::endl;
+        auto reader = getReader<Graph>(
+            [] {return new SingleGraphReader<Graph>("./automatas-graphs/");},
+            "SingleGraphReader<Graph>()"
+        );
+        return reader->read();
+    }
+}
 
 struct Analytics {
     int synchronizedCount;
@@ -97,11 +136,7 @@ Analytics generateAutomatasGraph(Graph& g, IRecorder<Graph>& recorder, IFilter<A
 
 int main() {
     // auto reader = SingleGraphReader<Automata>("./automatas/4/0.dot");
-    auto reader = getReader<Graph>(
-        [] {return new SingleGraphReader<Graph>();},
-        "SingleGraphReader<Graph>()"
-    );
-    auto graphs = reader->read();
+    auto graphs = getGraphsToAnalyze();
 
     auto recorder = getRecorder<Graph>(
         [] { return new DiskRecorder<Graph>("./automatas-graphs/");},
@@ -115,18 +150,16 @@ int main() {
     std::map<int, std::vector<int>> maxDistance;
     std::map<int, std::vector<int>> nonSyncVertexes;
 
-    for (int i = 0; i < 100; i++) {
-        maxDistance[i] = std::vector<int>();
-    }
-
-    for (int i = 0; i < 100; i++) {
-        nonSyncVertexes[i] = std::vector<int>();
-    }
-
     int count = 0;
     for (auto graph : graphs) {
         auto info = generateAutomatasGraph(graph, *recorder, filter, count);
+        if (!maxDistance.contains(info.maxRepaintingStepsCount)) {
+            maxDistance[info.maxRepaintingStepsCount] = std::vector<int>();
+        }
         maxDistance[info.maxRepaintingStepsCount].push_back(info.id);
+        if (!nonSyncVertexes.contains(info.nonSynchronizedCount)) {
+            nonSyncVertexes[info.nonSynchronizedCount] = std::vector<int>();
+        }
         nonSyncVertexes[info.nonSynchronizedCount].push_back(info.id);
         count++;
         if (count % 1000 == 0) {
@@ -134,18 +167,18 @@ int main() {
         }
     }
 
-    for (int i = 0; i < 10; i++) {
-        std::cout << "MaxDistance statistics " << i << ": " << maxDistance[i].size() << std::endl;
-        for (auto it = maxDistance[i].begin(); it != maxDistance[i].end(); ++it) {
+    for (auto i : maxDistance) {
+        std::cout << "MaxDistance statistics " << i.first << ": " << i.second.size() << std::endl;
+        for (auto it = i.second.begin(); it != i.second.end(); ++it) {
             std::cout << *it << " ";
         }
         std::cout << std::endl;
     }
 
     std::cout << std::endl;
-    for (int i = 100; i >= 0; i--) {
-        std::cout << "NonSyncVertexes statistics " << i << ": " << nonSyncVertexes[i].size() << std::endl;
-        for (auto it = nonSyncVertexes[i].begin(); it != nonSyncVertexes[i].end(); ++it) {
+    for (auto i : maxDistance) {
+        std::cout << "NonSyncVertexes statistics " << i.first << ": " << i.second.size() << std::endl;
+        for (auto it = i.second.begin(); it != i.second.end(); ++it) {
             std::cout << *it << " ";
         }
         std::cout << std::endl;

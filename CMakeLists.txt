@@ -46,6 +46,8 @@ add_executable(
         src/Filters/SimpleFilter/SimpleFilter.tpp
         src/Recorders/DiskRecorder/DiskRecorder.tpp
         src/Recorders/ConsoleRecorder/ConsoleRecorder.cpp
+        src/Generators/AllTwoOutgoingEdges/AllTwoOutgoingEdges.cpp
+        src/Generators/RandomTwoOutgoingEdges/RandomTwoOutgoingEdges.cpp
         src/Recorders/NoRecorder/NoRecorder.cpp
         src/Selectors/Selectors.h
         src/Recorders/Utils/Copy.h
