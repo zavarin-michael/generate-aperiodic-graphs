@@ -42,7 +42,7 @@ inline void DiskRecorder<Graph>::writeGraph(std::ofstream &ofs, Graph& g) {
     dp.property("fillcolor", get(&VertexProperties::fillcolor, g));
     dp.property("node_id", get(&VertexProperties::node_id, g));
     dp.property("style",
-        boost::make_constant_property<DirectedGraph::vertex_descriptor>(std::string("filled"))
+        boost::make_constant_property<Graph::vertex_descriptor>(std::string("filled"))
     );
 
     // add option to editor if needed
@@ -55,7 +55,11 @@ inline void DiskRecorder<Graph>::writeGraph(std::ofstream &ofs, Graph& g) {
 template<>
 inline void DiskRecorder<DirectedGraph>::writeGraph(std::ofstream &ofs, DirectedGraph& g) {
     boost::dynamic_properties dp;
+    dp.property("fillcolor", get(&VertexProperties::fillcolor, g));
     dp.property("node_id", get(&VertexProperties::node_id, g));
+    dp.property("style",
+        boost::make_constant_property<DirectedGraph::vertex_descriptor>(std::string("filled"))
+    );
 
     write_graphviz_dp(ofs, g, dp);
 }
@@ -63,12 +67,8 @@ inline void DiskRecorder<DirectedGraph>::writeGraph(std::ofstream &ofs, Directed
 template<>
 inline void DiskRecorder<Automata>::writeGraph(std::ofstream &ofs, Automata& g) {
     boost::dynamic_properties dp;
-    dp.property("fillcolor", get(&VertexProperties::fillcolor, g));
     dp.property("node_id", get(&VertexProperties::node_id, g));
     dp.property("label", get(&EdgeProperties::mark, g));
-    dp.property("style",
-        boost::make_constant_property<DirectedGraph::vertex_descriptor>(std::string("filled"))
-    );
 
     write_graphviz_dp(ofs, g, dp);
 }

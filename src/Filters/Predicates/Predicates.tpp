@@ -2,6 +2,7 @@
 
 #include "types/types.h"
 #include <boost/graph/strong_components.hpp>
+#include "Generators/BisetGraph/BisetGraph.h"
 #include <numeric>
 
 template <typename GraphType>
@@ -43,10 +44,9 @@ bool isStrongConnected(const GraphType& graph) {
 bool dfs(
     DirectedGraph& graph,
     DirectedGraph::vertex_descriptor v,
-    std::vector<bool>& visited,
-    std::set<DirectedGraph::vertex_descriptor>& goal
+    std::vector<bool>& visited
 ) {
-    if (goal.count(v)) {
+    if (graph[v].fillcolor == "green") {
         return true;
     }
 
@@ -55,7 +55,7 @@ bool dfs(
     for (auto [ei, ei_end] = boost::out_edges(v, graph); ei != ei_end; ++ei) {
         auto u = boost::target(*ei, graph);
         if (!visited[u]) {
-            if (dfs(graph, u, visited, goal)) {
+            if (dfs(graph, u, visited)) {
                 return true;
             }
         }
@@ -64,87 +64,13 @@ bool dfs(
     return false;
 }
 
-auto make_ordered_pair = [](auto a, auto b) {
-    auto [min_v, max_v] = std::minmax(a, b);
-    return std::make_pair(min_v, max_v);
-};
-
-std::pair<DirectedGraph, std::set<DirectedGraph::vertex_descriptor>> getBisetGraph(const Automata& automata) {
-    DirectedGraph g;
-
-    std::vector<Automata::vertex_descriptor> automata_vertices;
-    for (auto [vi, vi_end] = boost::vertices(automata); vi != vi_end; ++vi) {
-        automata_vertices.push_back(*vi);
-    }
-
-    // mapping to source edges
-    std::map<std::pair<int, int>, DirectedGraph::vertex_descriptor> pair_to_vertex;
-    std::set<DirectedGraph::vertex_descriptor> goal;
-
-    // all edges from source graph
-    for (auto v1 : automata_vertices) {
-        for (auto v2 : automata_vertices) {
-                auto p = make_ordered_pair(v1, v2);
-            if (pair_to_vertex.contains(p))
-                continue;
-            VertexProperties props;
-            props.node_id = v1 * 10 + v2;
-            const auto vertex_in_g = boost::add_vertex(props, g);
-
-            pair_to_vertex[p] = vertex_in_g;
-
-            if (v1 == v2) {
-                goal.insert(vertex_in_g);
-            }
-        }
-    }
-
-    for (auto v1 : automata_vertices) {
-        for (auto v2 : automata_vertices) {
-            std::map<char, std::vector<Automata::vertex_descriptor>> targets;
-
-            // all transitions from v1
-            for (auto [ei, ei_end] = boost::out_edges(v1, automata); ei != ei_end; ++ei) {
-                char label = automata[*ei].mark;
-                auto target = boost::target(*ei, automata);
-                targets[label].push_back(target);
-            }
-
-            // all transitions from v2
-            for (auto [ei, ei_end] = boost::out_edges(v2, automata); ei != ei_end; ++ei) {
-                char label = automata[*ei].mark;
-                auto target = boost::target(*ei, automata);
-                targets[label].push_back(target);
-            }
-
-            for (const auto& [label, dests] : targets) {
-                if (dests.size() > 1) {
-                    boost::add_edge(
-                        pair_to_vertex[make_ordered_pair(v1, v2)],
-                        pair_to_vertex[make_ordered_pair(dests[0], dests[1])],
-                        g
-                    );
-                }
-                else if (dests.size() == 1) {
-                    boost::add_edge(
-                        pair_to_vertex[make_ordered_pair(v1, v2)],
-                        pair_to_vertex[make_ordered_pair(dests[0], dests[0])],
-                        g
-                    );
-                }
-            }
-        }
-    }
-
-    return {g, goal};
-}
-
 bool isSynchronized(const Automata& automata) {
-    auto [graph, goal] = getBisetGraph(automata);
+    Automata temp = automata;
+    DirectedGraph graph = *BisetGraph<DirectedGraph>(temp).generateGraphs().begin();
 
     for (auto [vi, vi_end] = boost::vertices(graph); vi != vi_end; ++vi) {
         std::vector<bool> visited(boost::num_vertices(graph), false);
-        if (!dfs(graph, *vi, visited, goal)) {
+        if (!dfs(graph, *vi, visited)) {
             return false;
         }
     }

@@ -44,7 +44,7 @@ AutomataCoroutine::pull_type SingleGraphReader<Automata>::read() {
         Automata g;
 
         boost::dynamic_properties dp;
-        dp.property("fillcolor", boost::get(&VertexProperties::node_id, g));
+        dp.property("label", boost::get(&VertexProperties::node_id, g));
         dp.property("node_id", boost::get(&VertexProperties::node_id, g));
         dp.property("label", boost::get(&EdgeProperties::mark, g));
 

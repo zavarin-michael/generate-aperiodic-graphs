@@ -9,8 +9,7 @@ template <typename GraphType>
 bool isAperiodic(const GraphType& graph);
 template <typename GraphType>
 bool isNotAperiodic(const GraphType& graph);
-bool isSynchronized(const Automata& graph);
-std::pair<DirectedGraph, std::set<DirectedGraph::vertex_descriptor>> getBisetGraph(const Automata& automata);
+bool isSynchronized(const Automata& automata);
 
 #include "Predicates.tpp"
 

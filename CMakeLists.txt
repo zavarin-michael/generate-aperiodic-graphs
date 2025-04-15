@@ -20,6 +20,8 @@ add_executable(
         src/Readers/MultipleGraphsReaders/MultipleGraphsReader.h
         src/Readers/SingleGraphReader/SingleGraphReader.cpp
         src/Readers/SingleGraphReader/SingleGraphReader.h
+        src/Generators/BisetGraph/BisetGraph.cpp
+        src/Generators/BisetGraph/BisetGraph.h
 )
 add_executable(
         generate_automatas
@@ -38,6 +40,8 @@ add_executable(
         src/Readers/MultipleGraphsReaders/MultipleGraphsReader.h
         src/Readers/SingleGraphReader/SingleGraphReader.cpp
         src/Readers/SingleGraphReader/SingleGraphReader.h
+        src/Generators/BisetGraph/BisetGraph.cpp
+        src/Generators/BisetGraph/BisetGraph.h
 )
 add_executable(
         analyze_automatas
@@ -57,8 +61,32 @@ add_executable(
         src/Readers/MultipleGraphsReaders/MultipleGraphsReader.h
         src/Readers/SingleGraphReader/SingleGraphReader.cpp
         src/Readers/SingleGraphReader/SingleGraphReader.h
+        src/Generators/BisetGraph/BisetGraph.cpp
+        src/Generators/BisetGraph/BisetGraph.h
+)
+add_executable(
+        generate_biset_graphs
+        src/generate-biset-graphs.cpp
+        src/Readers/SingleGraphReader/SingleGraphReader.cpp
+        src/Filters/SimpleFilter/SimpleFilter.tpp
+        src/Recorders/DiskRecorder/DiskRecorder.tpp
+        src/Recorders/ConsoleRecorder/ConsoleRecorder.cpp
+        src/Generators/AllTwoOutgoingEdges/AllTwoOutgoingEdges.cpp
+        src/Generators/RandomTwoOutgoingEdges/RandomTwoOutgoingEdges.cpp
+        src/Recorders/NoRecorder/NoRecorder.cpp
+        src/Selectors/Selectors.h
+        src/Recorders/Utils/Copy.h
+        src/Generators/AutomatasFromGraph/AutomatasFromGraph.cpp
+        src/Generators/AutomatasFromGraph/AutomatasFromGraph.h
+        src/Readers/MultipleGraphsReaders/MultipleGraphsReader.cpp
+        src/Readers/MultipleGraphsReaders/MultipleGraphsReader.h
+        src/Readers/SingleGraphReader/SingleGraphReader.cpp
+        src/Readers/SingleGraphReader/SingleGraphReader.h
+        src/Generators/BisetGraph/BisetGraph.cpp
+        src/Generators/BisetGraph/BisetGraph.h
 )
 target_link_libraries(generate_graphs boost::boost)
 target_link_libraries(generate_automatas boost::boost)
 target_link_libraries(analyze_automatas boost::boost)
+target_link_libraries(generate_biset_graphs boost::boost)
 include_directories(${CMAKE_SOURCE_DIR}/src)
