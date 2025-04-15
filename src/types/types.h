@@ -9,8 +9,9 @@ struct VertexProperties {
     std::string fillcolor;
 };
 
-using Graph = boost::adjacency_list<boost::vecS, boost::vecS, boost::directedS, VertexProperties>;
-using GraphCoroutine = boost::coroutines2::coroutine<Graph&>;
+using Graph = boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS, VertexProperties>;
+using DirectedGraph = boost::adjacency_list<boost::vecS, boost::vecS, boost::directedS, VertexProperties>;
+using GraphCoroutine = boost::coroutines2::coroutine<DirectedGraph&>;
 
 // Marked edge
 struct EdgeProperties {

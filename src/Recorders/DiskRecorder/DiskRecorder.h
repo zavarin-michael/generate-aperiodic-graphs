@@ -14,7 +14,7 @@ private:
 public:
     std::filesystem::path dirPath;
     explicit DiskRecorder(std::filesystem::path rootDir = "", std::filesystem::path subDirs = "", bool isRewriteFiles = false);
-    void recordGraph(GraphType& g) override;
+    void recordGraph(GraphType& g, std::string name) override;
     DiskRecorder setFilename(const std::string& filename);
     DiskRecorder setDirPath(std::filesystem::path dirPath);
     void writeGraph(std::ofstream &ofs, GraphType &g);

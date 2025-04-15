@@ -1,7 +1,7 @@
 #include "AutomatasFromGraph.h"
 
 template<>
-AutomatasFromGraph<AutomataGenerationResult>::AutomatasFromGraph(Graph& g) : graph(g) {}
+AutomatasFromGraph<AutomataGenerationResult>::AutomatasFromGraph(DirectedGraph& g) : graph(g) {}
 
 template<>
 AutomataPairCoroutine::pull_type AutomatasFromGraph<AutomataGenerationResult>::generateGraphs() {
@@ -10,7 +10,7 @@ AutomataPairCoroutine::pull_type AutomatasFromGraph<AutomataGenerationResult>::g
             auto copy = std::make_shared<Automata>();
             auto &labeled = *copy;
 
-            std::map<Graph::vertex_descriptor, Automata::vertex_descriptor> vertex_map;
+            std::map<DirectedGraph::vertex_descriptor, Automata::vertex_descriptor> vertex_map;
 
             // vertexes copy
             for (auto [vi, vi_end] = boost::vertices(graph); vi != vi_end; ++vi) {

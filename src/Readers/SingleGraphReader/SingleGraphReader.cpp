@@ -27,9 +27,9 @@ SingleGraphReader<GraphType>::SingleGraphReader(const std::filesystem::path& fil
 
 
 template<>
-GraphCoroutine::pull_type SingleGraphReader<Graph>::read() {
+GraphCoroutine::pull_type SingleGraphReader<DirectedGraph>::read() {
     return GraphCoroutine::pull_type([this](GraphCoroutine::push_type& yield) {
-        Graph g;
+        DirectedGraph g;
         boost::dynamic_properties dp(boost::ignore_other_properties);
         if (!boost::read_graphviz(file, g, dp)) {
             throw std::runtime_error("Failed to read DOT file");
@@ -55,5 +55,5 @@ AutomataCoroutine::pull_type SingleGraphReader<Automata>::read() {
     });
 }
 
-template class SingleGraphReader<Graph>;
+template class SingleGraphReader<DirectedGraph>;
 template class SingleGraphReader<Automata>;

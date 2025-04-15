@@ -5,7 +5,7 @@
 #include "types/types.h"
 
 template<>
-int RandomTwoOutgoingEdges<Graph>::parsePositiveInt(const std::string& input, const std::string& field_name) {
+int RandomTwoOutgoingEdges<DirectedGraph>::parsePositiveInt(const std::string& input, const std::string& field_name) {
     std::istringstream iss(input);
     int value;
     if (!(iss >> value) || value <= 0) {
@@ -15,7 +15,7 @@ int RandomTwoOutgoingEdges<Graph>::parsePositiveInt(const std::string& input, co
 }
 
 template <>
-RandomTwoOutgoingEdges<Graph>::RandomTwoOutgoingEdges() {
+RandomTwoOutgoingEdges<DirectedGraph>::RandomTwoOutgoingEdges() {
     std::string input;
     std::cout << "\n"
               << "+=====================================+\n"
@@ -42,7 +42,7 @@ RandomTwoOutgoingEdges<Graph>::RandomTwoOutgoingEdges() {
 }
 
 template <>
-GraphCoroutine::pull_type RandomTwoOutgoingEdges<Graph>::generateGraphs() {
+GraphCoroutine::pull_type RandomTwoOutgoingEdges<DirectedGraph>::generateGraphs() {
     return GraphCoroutine::pull_type([this](GraphCoroutine::push_type &yield) {
         std::random_device rd;
         std::mt19937 gen(rd());
@@ -56,7 +56,7 @@ GraphCoroutine::pull_type RandomTwoOutgoingEdges<Graph>::generateGraphs() {
         std::uniform_int_distribution<> dist(0, pair_vertices.size() - 1);
 
         for (size_t i = 0; i < graphs_count; ++i) {
-            auto graph = Graph(this->vertexes_count);
+            auto graph = DirectedGraph(this->vertexes_count);
 
             for (int j = 0; j < vertexes_count; ++j) {
                 bool run = !with_self_loops;
@@ -85,4 +85,4 @@ GraphCoroutine::pull_type RandomTwoOutgoingEdges<Graph>::generateGraphs() {
     });
 }
 
-template class RandomTwoOutgoingEdges<Graph>;
+template class RandomTwoOutgoingEdges<DirectedGraph>;

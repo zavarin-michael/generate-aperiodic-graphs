@@ -31,27 +31,31 @@ MultipleGraphsReader<GraphType>::MultipleGraphsReader(std::filesystem::path file
 }
 
 
-template<>
-GraphCoroutine::pull_type MultipleGraphsReader<Graph>::read() {
-    return GraphCoroutine::pull_type([this](GraphCoroutine::push_type& yield) {
-        for (const auto& entry : std::filesystem::directory_iterator(dirPath)) {
+template<typename GraphType>
+boost::coroutines2::coroutine<GraphType &>::pull_type MultipleGraphsReader<GraphType>::read() {
+    std::vector<std::filesystem::directory_entry> entries;
+
+    // Step 1: collect all files
+    for (const auto& entry : std::filesystem::directory_iterator(dirPath)) {
+        if (entry.is_regular_file()) {
+            entries.push_back(entry);
+        }
+    }
+
+    std::sort(entries.begin(), entries.end(), [](const std::filesystem::directory_entry& a, const std::filesystem::directory_entry& b) {
+        int numA = std::stoi(a.path().stem().string());
+        int numB = std::stoi(b.path().stem().string());
+        return numA < numB;
+    });
+
+    return typename boost::coroutines2::coroutine<GraphType &>::pull_type([entries](boost::coroutines2::coroutine<GraphType &>::push_type& yield) {
+        for (const auto& entry : entries) {
             if (entry.is_regular_file()) {
-                yield(*SingleGraphReader<Graph>(entry.path()).read().begin());
+                yield(*SingleGraphReader<GraphType>(entry.path()).read().begin());
             }
         }
     });
 }
 
-template<>
-AutomataCoroutine::pull_type MultipleGraphsReader<Automata>::read() {
-    return AutomataCoroutine::pull_type([this](AutomataCoroutine::push_type& yield) {
-        for (const auto& entry : std::filesystem::directory_iterator(dirPath)) {
-            if (entry.is_regular_file()) {
-                yield(*SingleGraphReader<Automata>(entry.path()).read().begin());
-            }
-        }
-    });
-}
-
-template class MultipleGraphsReader<Graph>;
+template class MultipleGraphsReader<DirectedGraph>;
 template class MultipleGraphsReader<Automata>;

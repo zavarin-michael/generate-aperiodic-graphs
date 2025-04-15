@@ -13,17 +13,17 @@
 #include "Selectors/Selectors.h"
 
 int main() {
-    auto const recorder = getRecorder<Graph>(
-        [] { return new DiskRecorder<Graph>("./graphs/");},
+    auto const recorder = getRecorder<DirectedGraph>(
+        [] { return new DiskRecorder<DirectedGraph>("./graphs/");},
         "DiskRecorder(./graphs/)"
     );
     // auto generator = RandomTwoOutgoingEdges();
-    const auto generator = getGenerator<Graph>(
-        [] { return new AllTwoOutgoingEdges<Graph>();},
+    const auto generator = getGenerator<DirectedGraph>(
+        [] { return new AllTwoOutgoingEdges<DirectedGraph>();},
         "AllTwoOutgoingEdges"
     );
 
-    auto filter = SimpleFilter<Graph>(true);
+    auto filter = SimpleFilter<DirectedGraph>(true);
     auto count = 0;
 
     for (auto& graph : generator->generateGraphs()) {

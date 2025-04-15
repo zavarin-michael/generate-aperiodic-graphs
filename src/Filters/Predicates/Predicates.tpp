@@ -41,10 +41,10 @@ bool isStrongConnected(const GraphType& graph) {
 }
 
 bool dfs(
-    Graph& graph,
-    Graph::vertex_descriptor v,
+    DirectedGraph& graph,
+    DirectedGraph::vertex_descriptor v,
     std::vector<bool>& visited,
-    std::set<Graph::vertex_descriptor>& goal
+    std::set<DirectedGraph::vertex_descriptor>& goal
 ) {
     if (goal.count(v)) {
         return true;
@@ -69,8 +69,8 @@ auto make_ordered_pair = [](auto a, auto b) {
     return std::make_pair(min_v, max_v);
 };
 
-std::pair<Graph, std::set<Graph::vertex_descriptor>> getBisetGraph(const Automata& automata) {
-    Graph g;
+std::pair<DirectedGraph, std::set<DirectedGraph::vertex_descriptor>> getBisetGraph(const Automata& automata) {
+    DirectedGraph g;
 
     std::vector<Automata::vertex_descriptor> automata_vertices;
     for (auto [vi, vi_end] = boost::vertices(automata); vi != vi_end; ++vi) {
@@ -78,13 +78,13 @@ std::pair<Graph, std::set<Graph::vertex_descriptor>> getBisetGraph(const Automat
     }
 
     // mapping to source edges
-    std::map<std::pair<int, int>, Graph::vertex_descriptor> pair_to_vertex;
-    std::set<Graph::vertex_descriptor> goal;
+    std::map<std::pair<int, int>, DirectedGraph::vertex_descriptor> pair_to_vertex;
+    std::set<DirectedGraph::vertex_descriptor> goal;
 
     // all edges from source graph
     for (auto v1 : automata_vertices) {
         for (auto v2 : automata_vertices) {
-            auto p = make_ordered_pair(v1, v2);
+                auto p = make_ordered_pair(v1, v2);
             if (pair_to_vertex.contains(p))
                 continue;
             VertexProperties props;
@@ -151,11 +151,11 @@ bool isSynchronized(const Automata& automata) {
     return true;
 }
 
-template bool isStrongConnected(const Graph& graph);
+template bool isStrongConnected(const DirectedGraph& graph);
 template bool isStrongConnected(const Automata& automata);
 
-template bool isAperiodic(const Graph& graph);
+template bool isAperiodic(const DirectedGraph& graph);
 template bool isAperiodic(const Automata& automata);
 
-template bool isNotAperiodic(const Graph& graph);
+template bool isNotAperiodic(const DirectedGraph& graph);
 template bool isNotAperiodic(const Automata& automata);

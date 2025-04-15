@@ -10,7 +10,7 @@
 template<typename GraphType>
 class NoRecorder : public IRecorder<GraphType>  {
 public:
-    void recordGraph(GraphType& g) override;
+    void recordGraph(GraphType& g, std::string name) override;
 };
 
 

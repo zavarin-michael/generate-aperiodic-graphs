@@ -38,5 +38,5 @@ IRecorder<GraphType>* getRecorder(const std::function<IRecorder<GraphType>*()>& 
     }
 }
 
-template IRecorder<Graph>* getRecorder(const std::function<IRecorder<Graph>*()>& getDefaultRecorder, const std::string& defaultRecorderName);
+template IRecorder<DirectedGraph>* getRecorder(const std::function<IRecorder<DirectedGraph>*()>& getDefaultRecorder, const std::string& defaultRecorderName);
 template IRecorder<Automata>* getRecorder(const std::function<IRecorder<Automata>*()>& getDefaultRecorder, const std::string& defaultRecorderName);

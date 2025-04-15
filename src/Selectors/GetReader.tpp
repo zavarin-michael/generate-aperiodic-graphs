@@ -36,7 +36,7 @@ IReader<GraphType>* getReader(const std::function<IReader<GraphType>*()>& getDef
     }
 }
 
-template IReader<Graph>* getReader(const std::function<IReader<Graph>*()>& getDefaultReader, const std::string& defaultReaderName);
+template IReader<DirectedGraph>* getReader(const std::function<IReader<DirectedGraph>*()>& getDefaultReader, const std::string& defaultReaderName);
 template IReader<Automata>* getReader(const std::function<IReader<Automata>*()>& getDefaultReader, const std::string& defaultReaderName);
 
 

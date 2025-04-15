@@ -6,7 +6,7 @@
 #include "types/types.h"
 
 template<>
-int AllTwoOutgoingEdges<Graph>::parsePositiveInt(const std::string& input, const std::string& field_name) {
+int AllTwoOutgoingEdges<DirectedGraph>::parsePositiveInt(const std::string& input, const std::string& field_name) {
     std::istringstream iss(input);
     int value;
     if (!(iss >> value) || value <= 0) {
@@ -16,7 +16,7 @@ int AllTwoOutgoingEdges<Graph>::parsePositiveInt(const std::string& input, const
 }
 
 template<>
-AllTwoOutgoingEdges<Graph>::AllTwoOutgoingEdges() {
+AllTwoOutgoingEdges<DirectedGraph>::AllTwoOutgoingEdges() {
     std::string input;
     std::cout << "\n"
               << "+=====================================+\n"
@@ -37,7 +37,7 @@ AllTwoOutgoingEdges<Graph>::AllTwoOutgoingEdges() {
 }
 
 template<>
-GraphCoroutine::pull_type AllTwoOutgoingEdges<Graph>::generateGraphs() {
+GraphCoroutine::pull_type AllTwoOutgoingEdges<DirectedGraph>::generateGraphs() {
     auto n = vertexes_count;
     return GraphCoroutine::pull_type([n, this](GraphCoroutine::push_type& yield) {
         auto pair_vertices = std::vector<std::pair<int, int>>();
@@ -57,7 +57,7 @@ GraphCoroutine::pull_type AllTwoOutgoingEdges<Graph>::generateGraphs() {
         for (auto cases : edges) {
             std::vector<size_t> indices(n, 0);
 
-            auto initGraph = Graph(n);
+            auto initGraph = DirectedGraph(n);
 
             for (auto j : cases) {
                 add_edge(j.first, j.second, initGraph);
@@ -66,7 +66,7 @@ GraphCoroutine::pull_type AllTwoOutgoingEdges<Graph>::generateGraphs() {
             bool done = false;
 
             while (true) {
-                Graph graph;
+                DirectedGraph graph;
                 copy_graph(initGraph, graph);
 
                 for (int i = 1; i < n; ++i) {
@@ -114,4 +114,4 @@ GraphCoroutine::pull_type AllTwoOutgoingEdges<Graph>::generateGraphs() {
     });
 }
 
-template class AllTwoOutgoingEdges<Graph>;
+template class AllTwoOutgoingEdges<DirectedGraph>;

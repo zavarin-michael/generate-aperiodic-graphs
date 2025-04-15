@@ -19,7 +19,7 @@ std::vector<int> SimpleFilter<GraphType>::getInput() {
 }
 
 template <>
-SimpleFilter<Graph>::SimpleFilter(const bool is_custom, std::vector<std::function<bool(Graph)>> predicates) {
+SimpleFilter<DirectedGraph>::SimpleFilter(const bool is_custom, std::vector<std::function<bool(DirectedGraph)>> predicates) {
   if (!is_custom) {
     this->predicates = predicates;
     return;
@@ -32,10 +32,10 @@ SimpleFilter<Graph>::SimpleFilter(const bool is_custom, std::vector<std::functio
 
   const auto choices = getInput();
 
-  std::map<int, std::function<bool(Graph)>> allPredicates = {
-    {1, [](Graph g) { return isStrongConnected(g); }},
-    {2, [](Graph g) { return isAperiodic(g); }},
-    {3, [](Graph g) { return isNotAperiodic(g); }},
+  std::map<int, std::function<bool(DirectedGraph)>> allPredicates = {
+    {1, [](DirectedGraph g) { return isStrongConnected(g); }},
+    {2, [](DirectedGraph g) { return isAperiodic(g); }},
+    {3, [](DirectedGraph g) { return isNotAperiodic(g); }},
   };
 
 
@@ -88,5 +88,5 @@ bool SimpleFilter<GraphType>::isAccepted(GraphType& graph) {
   return true;
 }
 
-template class SimpleFilter<Graph>;
+template class SimpleFilter<DirectedGraph>;
 template class SimpleFilter<Automata>;

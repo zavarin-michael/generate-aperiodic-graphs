@@ -11,7 +11,7 @@
 #include "types/types.h"
 
 int main() {
-    auto reader = SingleGraphReader<Graph>();
+    auto reader = SingleGraphReader<DirectedGraph>();
     // auto recorder = ConsoleRecorder<Automata>();
     auto recorder = getRecorder<Automata>(
         [] {return new DiskRecorder<Automata>("./automatas/");},
@@ -25,8 +25,6 @@ int main() {
         recorder->recordGraph(*automata_ptr);
     }
 
-    auto copy = *Copy<DiskRecorder<Graph>, Automata>(recorder);
-    copy
-    .setFilename("graph.dot")
-    .recordGraph(g);
+    auto copy = *Copy<DiskRecorder<DirectedGraph>, Automata>(recorder);
+    copy.recordGraph(g, "graph");
 }

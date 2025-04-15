@@ -3,9 +3,10 @@
 #include <types/types.h>
 
 template<class GraphType>
-void NoRecorder<GraphType>::recordGraph(GraphType& g) {
+void NoRecorder<GraphType>::recordGraph(GraphType& g, std::string name) {
     return;
 }
 
-template class NoRecorder<Graph>;
+template class NoRecorder<DirectedGraph>;
 template class NoRecorder<Automata>;
+template class NoRecorder<Graph>;

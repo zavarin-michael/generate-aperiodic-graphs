@@ -4,7 +4,7 @@
 #include <types/types.h>
 
 template<>
-IGenerator<Graph>* getGenerator(const std::function<IGenerator<Graph>*()>& getDefaultGenerator, const std::string& defaultGeneratorName) {
+IGenerator<DirectedGraph>* getGenerator(const std::function<IGenerator<DirectedGraph>*()>& getDefaultGenerator, const std::string& defaultGeneratorName) {
     std::cout << "Select a Generator [" << defaultGeneratorName << "]" << std::endl;
     std::cout << "1: AllTwoOutgoingEdges" << std::endl;
     std::cout << "2: RandomTwoOutgoingEdges" << std::endl;
@@ -25,14 +25,14 @@ IGenerator<Graph>* getGenerator(const std::function<IGenerator<Graph>*()>& getDe
 
     switch (choice) {
         case 1:
-            return new AllTwoOutgoingEdges<Graph>();
+            return new AllTwoOutgoingEdges<DirectedGraph>();
         case 2:
-            return new RandomTwoOutgoingEdges<Graph>();
+            return new RandomTwoOutgoingEdges<DirectedGraph>();
         default:
             std::cout << "Invalid option. Defaulting to NoRecorder" << std::endl;
         throw;
     }
 }
 
-template IGenerator<Graph>* getGenerator(const std::function<IGenerator<Graph>*()>& getDefaultGenerator, const std::string& defaultGeneratorName);
+template IGenerator<DirectedGraph>* getGenerator(const std::function<IGenerator<DirectedGraph>*()>& getDefaultGenerator, const std::string& defaultGeneratorName);
 // template IGenerator<Automata>* getGenerator(const std::function<IGenerator<Automata>*()>& getDefaultGenerator, const std::string& defaultGeneratorName);
