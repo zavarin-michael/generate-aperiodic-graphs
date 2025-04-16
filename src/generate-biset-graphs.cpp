@@ -24,4 +24,8 @@ int main() {
     for (auto& graph : generator.generateGraphs()) {
         recorder->recordGraph(graph, "biset");
     }
+
+    std::cout << "Press Enter to exit...";
+    std::cin.get();
+    return 0;
 }

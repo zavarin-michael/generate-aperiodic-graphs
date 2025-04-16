@@ -27,4 +27,9 @@ int main() {
 
     auto copy = *Copy<DiskRecorder<DirectedGraph>, Automata>(recorder);
     copy.recordGraph(g, "graph");
+
+    std::cout << "Press Enter to exit...";
+    std::cin.get();
+
+    return 0;
 }

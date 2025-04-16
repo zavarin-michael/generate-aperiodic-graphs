@@ -209,4 +209,11 @@ int main() {
 
     printStats(maxDistance, "MaxDistance statistics");
     printStats(nonSyncVertexes, "NonSyncVertexes statistics");
+
+    outFile.close();
+
+    std::cout << "Press Enter to exit...";
+    std::cin.get();
+
+    return 0;
 }

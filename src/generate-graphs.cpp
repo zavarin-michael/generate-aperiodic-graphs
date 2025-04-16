@@ -38,5 +38,7 @@ int main() {
     }
 
     std::cout << count << '\n';
+    std::cout << "Press Enter to exit...";
+    std::cin.get();
     return 0;
 }
