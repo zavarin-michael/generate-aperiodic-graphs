@@ -41,6 +41,21 @@ bool isStrongConnected(const GraphType& graph) {
     return strong_components(graph, make_iterator_property_map(component.begin(), get(boost::vertex_index, graph))) == 1;
 }
 
+template <typename GraphType>
+bool isEulerian(GraphType& g) {
+    if (!isStrongConnected(g))
+        return false;
+
+    auto [vi, vi_end] = vertices(g);
+    for (auto it = vi; it != vi_end; ++it) {
+        if (in_degree(*it, g) != out_degree(*it, g)) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 bool dfs(
     DirectedGraph& graph,
     DirectedGraph::vertex_descriptor v,
@@ -85,3 +100,6 @@ template bool isAperiodic(const Automata& automata);
 
 template bool isNotAperiodic(const DirectedGraph& graph);
 template bool isNotAperiodic(const Automata& automata);
+
+template bool isEulerian(const Automata& automata);
+template bool isEulerian(const DirectedGraph& automata);

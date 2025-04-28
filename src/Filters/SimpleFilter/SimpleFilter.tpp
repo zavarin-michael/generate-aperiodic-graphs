@@ -29,6 +29,7 @@ SimpleFilter<DirectedGraph>::SimpleFilter(const bool is_custom, std::vector<std:
   std::cout << "1: isStrongConnected\n";
   std::cout << "2: isAperiodic\n";
   std::cout << "3: isNotAperiodic\n";
+  std::cout << "4: isEulerian\n";
 
   const auto choices = getInput();
 
@@ -36,11 +37,12 @@ SimpleFilter<DirectedGraph>::SimpleFilter(const bool is_custom, std::vector<std:
     {1, [](DirectedGraph g) { return isStrongConnected(g); }},
     {2, [](DirectedGraph g) { return isAperiodic(g); }},
     {3, [](DirectedGraph g) { return isNotAperiodic(g); }},
+    {4, [](DirectedGraph g) { return isEulerian(g); }},
   };
 
 
   for (const auto& choice : choices) {
-    if (choice > 0 && choice < 4) {
+    if (choice > 0 && choice < 5) {
       this->predicates.push_back(allPredicates[choice]);
     } else {
       std::cout << "Invalid filter:" << choice << ". Ignored!" << std::endl;
@@ -59,6 +61,8 @@ SimpleFilter<Automata>::SimpleFilter(const bool is_custom, std::vector<std::func
   std::cout << "1: isStrongConnected\n";
   std::cout << "2: isAperiodic\n";
   std::cout << "3: isNotAperiodic\n";
+  std::cout << "4: isEulerian\n";
+  std::cout << "5: isSynchronized\n";
 
   const auto choices = getInput();
 
@@ -66,13 +70,14 @@ SimpleFilter<Automata>::SimpleFilter(const bool is_custom, std::vector<std::func
     {1, [](Automata g) { return isStrongConnected(g); }},
     {2, [](Automata g) { return isAperiodic(g); }},
     {3, [](Automata g) { return isNotAperiodic(g); }},
-    {3, [](Automata g) { return isSynchronized(g); }}
+    {4, [](Automata g) { return isEulerian(g); }},
+    {5, [](Automata g) { return isSynchronized(g); }}
   };
   // Available predicate functions
 
 
   for (const auto& choice : choices) {
-    if (choice > 0 && choice < 5) {
+    if (choice > 0 && choice < 6) {
       this->predicates.push_back(allPredicates[choice]);
     } else {
       std::cout << "Invalid filter:" << choice << ". Ignored!" << std::endl;
