@@ -7,6 +7,7 @@
 #include "Generators/AutomatasFromGraph/AutomatasFromGraph.h"
 #include <Selectors/Selectors.h>
 
+#include "Recorders/Utils/Copy.h"
 #include "types/types.h"
 
 boost::coroutines2::coroutine<DirectedGraph&>::pull_type getGraphsToAnalyze() {
@@ -51,15 +52,19 @@ struct Analytics {
     int synchronizedCount;
     int nonSynchronizedCount;
     int maxRepaintingStepsCount;
+    int vertexMaxRepaintingStepsCount;
     int id;
 };
 
-int findLongestToGreen(Graph& g) {
+void getMinDistancesToGreen(Graph& g, std::vector<std::pair<int, int>>& distance) {
     auto [vi, vi_end] = boost::vertices(g);
 
-    std::vector<int> distance(boost::num_vertices(g), INT_MAX);
-
     std::queue<DirectedGraph::vertex_descriptor> q;
+    distance.resize(vi_end - vi);
+
+    for (auto it = vi; it != vi_end; ++it) {
+        distance[*it] = std::make_pair(INT_MAX, *it);
+    }
 
     for (auto it = vi; it != vi_end; ++it) {
         auto start = *it;
@@ -67,7 +72,7 @@ int findLongestToGreen(Graph& g) {
         // Пропускаем зелёные вершины
         if (g[start].fillcolor != "green") continue;
 
-        distance[start] = 0;
+        distance[start].first = 0;
 
         q.push(start);
 
@@ -79,19 +84,27 @@ int findLongestToGreen(Graph& g) {
             for (auto it_adj = ai; it_adj != ai_end; ++it_adj) {
                 auto u = *it_adj;
 
-                if (g[u].fillcolor != "green" && distance[u] > distance[v] + 1) {
+                if (g[u].fillcolor != "green" && distance[u].first > distance[v].first + 1) {
                     q.push(u);
-                    distance[u] = distance[v] + 1;
+                    distance[u].first = distance[v].first + 1;
                 }
             }
         }
     }
-
-    return *std::ranges::max_element(distance);
 }
 
-Analytics generateAutomatasGraph(DirectedGraph& g, IFilter<Automata>& filter, Graph& new_graph, int id) {
-    auto n = g.m_vertices.size();
+std::pair<int, int> findLongestToGreen(Graph& g) {
+    std::vector<std::pair<int, int>> distances;
+
+    getMinDistancesToGreen(g, distances);
+
+    return *std::ranges::max_element(distances, [](const auto& a, const auto& b) {
+        return a.first < b.first;
+    });
+}
+
+Analytics generateAutomatasGraph(DirectedGraph& g, IFilter<Automata>& filter, Graph& new_graph, int id, unsigned long long xorMask) {
+    auto n = g.m_vertices.size() - 1;
     std::map<int, DirectedGraph::vertex_descriptor> vertex_map;
 
     for (int mask = 0; mask < 1 << n; mask++) {
@@ -104,28 +117,31 @@ Analytics generateAutomatasGraph(DirectedGraph& g, IFilter<Automata>& filter, Gr
         new_graph[*it].node_id = *it;
     }
 
-    auto generator = AutomatasFromGraph<AutomataGenerationResult>(g);
-
+    auto generator = AutomatasFromGraph<AutomataGenerationResult>(g, true);
     int count = 0;
     for (auto [mask, automata_ptr]  : generator.generateGraphs()) {
+        auto newMask = xorMask ^ mask;
         for (int i = 0; i < n; ++i) {
-            unsigned int flipped = mask ^ (1 << i);
-            auto [edge_it, exists] = boost::edge(vertex_map[mask], vertex_map[flipped], new_graph);
+            unsigned int flipped = newMask ^ (1 << i);
+            auto [edge_it, exists] = boost::edge(vertex_map[newMask], vertex_map[flipped], new_graph);
             if (!exists) {
-                boost::add_edge(vertex_map[mask], vertex_map[flipped], new_graph);
+                boost::add_edge(vertex_map[newMask], vertex_map[flipped], new_graph);
             }
         }
         auto& automata = *automata_ptr;
         if (filter.isAccepted(automata)) {
             new_graph[vertex_map[mask]].fillcolor = "green";
-            count++;
+            count+=2;
         }
     }
 
+    auto [fst, snd] = findLongestToGreen(new_graph);
+
     const Analytics result {
         .synchronizedCount = count,
-        .nonSynchronizedCount = (1 << n) - count,
-        .maxRepaintingStepsCount = findLongestToGreen(new_graph),
+        .nonSynchronizedCount = (1 << n + 1) - count,
+        .maxRepaintingStepsCount = fst,
+        .vertexMaxRepaintingStepsCount = snd,
         .id = id
     };
     return result;
@@ -139,14 +155,13 @@ int main() {
         "DiskRecorder(./automatas-graphs/)"
     );
 
+    auto copy = Copy<DirectedGraph, Graph>(recorder);
+
     auto filter = SimpleFilter(false, std::vector<std::function<bool(Automata)>> {
         isSynchronized,
     });
 
-    std::map<int, std::vector<int>> maxDistance;
-    std::map<int, std::vector<int>> nonSyncVertexes;
-
-    std::cout << "Limit of listed graphs for each category [20]:" << std::endl;
+    std::cout << "Limit of listed examples graphs for each category [20]:" << std::endl;
 
     std::string option;
     std::getline(std::cin, option);
@@ -156,7 +171,20 @@ int main() {
         try {
             limit = std::stoi(option);
         } catch (...) {
-            limit = -1; // Invalid input
+            throw std::invalid_argument("Invalid option");
+        }
+    }
+
+    // Ask for xor mask
+    std::cout << "Enter xor mask for automatas graph [0]:" << std::endl;
+    std::getline(std::cin, option);
+
+    unsigned long long xorMask = 0;
+    if (!option.empty()) {
+        try {
+            xorMask = std::stoi(option);
+        } catch (...) {
+            throw std::invalid_argument("Invalid option");
         }
     }
 
@@ -176,39 +204,53 @@ int main() {
         throw std::runtime_error("Could not open file for writing: " + filename);
     }
 
+    std::map<long long, std::vector<int>> maxDistanceExamples;
+    std::map<long long, std::vector<int>> nonSyncVertexesExamples;
+    std::map<int, int> maxDistanceVertex;
+
+    std::map<long long, long long> maxDistance;
+    std::map<long long, long long> nonSyncVertexes;
+
     int count = 0;
     for (auto graph : graphs) {
         Graph new_graph;
-        auto info = generateAutomatasGraph(graph, filter, new_graph, count);
+        auto info = generateAutomatasGraph(graph, filter, new_graph, count, xorMask);
 
-        if (maxDistance[info.maxRepaintingStepsCount].size() < limit) {
-            maxDistance[info.maxRepaintingStepsCount].push_back(info.id);
+        maxDistance[info.maxRepaintingStepsCount]++;
+        nonSyncVertexes[info.nonSynchronizedCount]++;
+
+        if (maxDistanceExamples[info.maxRepaintingStepsCount].size() < limit) {
+            maxDistanceExamples[info.maxRepaintingStepsCount].push_back(info.id);
+            maxDistanceVertex[info.id] = info.vertexMaxRepaintingStepsCount;
             recorder->recordGraph(new_graph, std::to_string(info.id));
+            copy->recordGraph(graph, "graph" + std::to_string(info.id));
         }
-        if (nonSyncVertexes[info.nonSynchronizedCount].size() < limit) {
-            nonSyncVertexes[info.nonSynchronizedCount].push_back(info.id);
+        if (nonSyncVertexesExamples[info.nonSynchronizedCount].size() < limit) {
+            nonSyncVertexesExamples[info.nonSynchronizedCount].push_back(info.id);
+            maxDistanceVertex[info.id] = info.vertexMaxRepaintingStepsCount;
             recorder->recordGraph(new_graph, std::to_string(info.id));
+            copy->recordGraph(graph, "graph" + std::to_string(info.id));
         }
 
-        if (++count % 1000 == 0) {
+        if (++count % 100 == 0) {
             std::cout << count << std::endl;
         }
     }
 
-    auto printStats = [&outFile](const std::map<int, std::vector<int>>& data, const std::string& title) {
-        for (const auto& [key, ids] : data) {
-            std::cout << title << " " << key << ": " << ids.size() << std::endl;
-            outFile << title << " " << key << ": " << ids.size() << "\n";
-            for (int id : ids) {
-                outFile << id << " ";
+    auto printStats = [&outFile, &maxDistanceVertex](const std::map<long long, std::vector<int>>& examples, const std::map<long long, long long>& data, const std::string& title) {
+        for (const auto& [key, count] : data) {
+            std::cout << title << " " << key << ": " << count << std::endl;
+            outFile << title << " " << key << ": " << count << "\n";
+            for (int id : examples.at(key)) {
+                outFile << id << "[" << maxDistanceVertex.at(id) << "] ";
             }
             outFile << "\n";
         }
         outFile << "\n";
     };
 
-    printStats(maxDistance, "MaxDistance statistics");
-    printStats(nonSyncVertexes, "NonSyncVertexes statistics");
+    printStats(maxDistanceExamples, maxDistance, "MaxDistance statistics");
+    printStats(nonSyncVertexesExamples, nonSyncVertexes, "NonSyncVertexes statistics");
 
     outFile.close();
 

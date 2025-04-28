@@ -29,7 +29,7 @@ GraphCoroutine::pull_type BisetGraph<DirectedGraph>::generateGraphs() {
                 if (pair_to_vertex.contains(p))
                     continue;
                 VertexProperties props;
-                props.node_id = v1 * 10 + v2;
+                props.node_id = v1 * 100000 + v2;
                 const auto vertex_in_g = boost::add_vertex(props, g);
 
                 pair_to_vertex[p] = vertex_in_g;

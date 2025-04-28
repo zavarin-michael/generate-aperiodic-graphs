@@ -11,10 +11,11 @@ template <typename GraphType>
 class AutomatasFromGraph : public IGenerator<GraphType> {
 private:
     DirectedGraph& graph;
+    bool isHalf = false;
 public:
     using pull_type = typename GeneratorTraits<GraphType>::pull_type;
 
-    AutomatasFromGraph(DirectedGraph& g);
+    AutomatasFromGraph(DirectedGraph& g, bool isHalf = false);
     pull_type generateGraphs() override;
 };
 

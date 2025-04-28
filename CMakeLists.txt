@@ -22,6 +22,8 @@ add_executable(
         src/Readers/SingleGraphReader/SingleGraphReader.h
         src/Generators/BisetGraph/BisetGraph.cpp
         src/Generators/BisetGraph/BisetGraph.h
+        src/Generators/EulerianGraphs/EulerianGraphs.cpp
+        src/Generators/EulerianGraphs/EulerianGraphs.h
 )
 add_executable(
         generate_automatas
@@ -42,6 +44,8 @@ add_executable(
         src/Readers/SingleGraphReader/SingleGraphReader.h
         src/Generators/BisetGraph/BisetGraph.cpp
         src/Generators/BisetGraph/BisetGraph.h
+        src/Generators/EulerianGraphs/EulerianGraphs.cpp
+        src/Generators/EulerianGraphs/EulerianGraphs.h
 )
 add_executable(
         analyze_automatas
@@ -63,6 +67,8 @@ add_executable(
         src/Readers/SingleGraphReader/SingleGraphReader.h
         src/Generators/BisetGraph/BisetGraph.cpp
         src/Generators/BisetGraph/BisetGraph.h
+        src/Generators/EulerianGraphs/EulerianGraphs.cpp
+        src/Generators/EulerianGraphs/EulerianGraphs.h
 )
 add_executable(
         generate_biset_graphs
@@ -84,6 +90,8 @@ add_executable(
         src/Readers/SingleGraphReader/SingleGraphReader.h
         src/Generators/BisetGraph/BisetGraph.cpp
         src/Generators/BisetGraph/BisetGraph.h
+        src/Generators/EulerianGraphs/EulerianGraphs.cpp
+        src/Generators/EulerianGraphs/EulerianGraphs.h
 )
 target_link_libraries(generate_graphs boost::boost)
 target_link_libraries(generate_automatas boost::boost)

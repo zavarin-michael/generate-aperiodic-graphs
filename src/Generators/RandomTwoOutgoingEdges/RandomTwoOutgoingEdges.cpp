@@ -39,6 +39,12 @@ RandomTwoOutgoingEdges<DirectedGraph>::RandomTwoOutgoingEdges() {
     if (!input.empty()) {
         with_self_loops = !(input == "false");
     }
+
+    std::cout << std::left << "-> With multiple edges [" << (with_multiple_edges ? "true" : "false") << "]: ";
+    std::getline(std::cin, input);
+    if (!input.empty()) {
+        with_multiple_edges = input == "true";
+    }
 }
 
 template <>
@@ -57,16 +63,18 @@ GraphCoroutine::pull_type RandomTwoOutgoingEdges<DirectedGraph>::generateGraphs(
 
         for (size_t i = 0; i < graphs_count; ++i) {
             auto graph = DirectedGraph(this->vertexes_count);
-
+            bool run;
             for (int j = 0; j < vertexes_count; ++j) {
-                bool run = !with_self_loops;
                 do {
                     auto [v, u] = pair_vertices[dist(gen)];
+                    run = false;
 
-                    if (v != j && u != j) {
+                    run |= !with_self_loops && (v == j || u == j);
+                    run |= !with_multiple_edges && v == u;
+
+                    if (!run) {
                         add_edge(j, u, graph);
                         add_edge(j, v, graph);
-                        run = false;
                     }
                 } while (run);
             }
@@ -74,10 +82,6 @@ GraphCoroutine::pull_type RandomTwoOutgoingEdges<DirectedGraph>::generateGraphs(
             auto [vi, vi_end] = boost::vertices(graph);
             for (auto it = vi; it != vi_end; ++it) {
                 graph[*it].node_id = *it;
-            }
-
-            if (i % 100 == 0) {
-                std::cout << i << "\n";
             }
 
             yield(graph);

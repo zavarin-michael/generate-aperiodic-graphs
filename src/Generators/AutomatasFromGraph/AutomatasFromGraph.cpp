@@ -1,12 +1,15 @@
 #include "AutomatasFromGraph.h"
 
 template<>
-AutomatasFromGraph<AutomataGenerationResult>::AutomatasFromGraph(DirectedGraph& g) : graph(g) {}
+AutomatasFromGraph<AutomataGenerationResult>::AutomatasFromGraph(DirectedGraph& g, bool isHalf) : graph(g) {
+    this->isHalf = isHalf;
+}
 
 template<>
 AutomataPairCoroutine::pull_type AutomatasFromGraph<AutomataGenerationResult>::generateGraphs() {
     return AutomataPairCoroutine::pull_type([this](AutomataPairCoroutine::push_type &yield) {
-        for (int mask = 0; mask < 1 << graph.m_vertices.size(); mask++) {
+        const auto maxMask = isHalf ? graph.m_vertices.size() - 1 : graph.m_vertices.size();
+        for (int mask = 0; mask < 1 << maxMask; mask++) {
             auto copy = std::make_shared<Automata>();
             auto &labeled = *copy;
 

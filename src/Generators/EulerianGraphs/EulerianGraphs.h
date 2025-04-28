@@ -1,11 +1,16 @@
-#ifndef RANDOMTWOOUTGOINGEDGES_H
-#define RANDOMTWOOUTGOINGEDGES_H
+//
+// Created by User on 18.04.2025.
+//
+
+#ifndef EULERIANGRAPHS_H
+#define EULERIANGRAPHS_H
+
 
 #include "Generators/IGenerator.h"
 
 
 template <typename GraphType>
-class RandomTwoOutgoingEdges : public IGenerator<GraphType> {
+class EulerianGraphs : public IGenerator<GraphType> {
 private:
     size_t vertexes_count{10};
     size_t graphs_count{10000};
@@ -14,10 +19,9 @@ private:
     static int parsePositiveInt(const std::string& input, const std::string& field_name);
 public:
     using pull_type = typename GeneratorTraits<GraphType>::pull_type;
-    RandomTwoOutgoingEdges();
+    EulerianGraphs();
     pull_type generateGraphs() override;
 };
 
 
-
-#endif //TWOOUTGOINGEDGES_H
+#endif //EULERIANGRAPHS_H
