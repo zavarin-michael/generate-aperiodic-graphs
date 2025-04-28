@@ -3,20 +3,7 @@
 #include <Filters/Predicates/Predicates.h>
 #include <types/types.h>
 
-template <typename GraphType>
-std::vector<int> SimpleFilter<GraphType>::getInput() {
-  std::string input;
-  std::getline(std::cin, input);
-  std::istringstream iss(input);
-
-  std::vector<int> choices;
-  int num;
-  while (iss >> num) {
-    choices.push_back(num);
-  }
-
-  return choices;
-}
+#include "Utils/Utils.h"
 
 template <>
 SimpleFilter<DirectedGraph>::SimpleFilter(const bool is_custom, std::vector<std::function<bool(DirectedGraph)>> predicates) {

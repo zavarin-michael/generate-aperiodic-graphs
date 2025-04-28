@@ -81,7 +81,7 @@ bool dfs(
 
 bool isSynchronized(const Automata& automata) {
     Automata temp = automata;
-    DirectedGraph graph = *BisetGraph<DirectedGraph>(temp).generateGraphs().begin();
+    DirectedGraph graph = *BisetGraph(temp).generateGraphs().begin();
 
     for (auto [vi, vi_end] = boost::vertices(graph); vi != vi_end; ++vi) {
         std::vector<bool> visited(boost::num_vertices(graph), false);

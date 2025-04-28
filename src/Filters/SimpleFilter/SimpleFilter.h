@@ -8,7 +8,6 @@ template <typename GraphType>
 class SimpleFilter : public IFilter<GraphType> {
 private:
   std::vector<std::function<bool(GraphType)>> predicates;
-  static std::vector<int> getInput();
 public:
   bool isAccepted(GraphType& g) override;
   SimpleFilter(bool is_custom = false,  std::vector<std::function<bool(GraphType)>> predicates = {});

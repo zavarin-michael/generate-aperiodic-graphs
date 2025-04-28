@@ -60,6 +60,7 @@ inline void DiskRecorder<DirectedGraph>::writeGraph(std::ofstream &ofs, Directed
     dp.property("style",
         boost::make_constant_property<DirectedGraph::vertex_descriptor>(std::string("filled"))
     );
+    dp.property("label", get(&DirectedGraphProperties::meta, g));
 
     write_graphviz_dp(ofs, g, dp);
 }
@@ -68,7 +69,7 @@ template<>
 inline void DiskRecorder<Automata>::writeGraph(std::ofstream &ofs, Automata& g) {
     boost::dynamic_properties dp;
     dp.property("node_id", get(&VertexProperties::node_id, g));
-    dp.property("label", get(&EdgeProperties::mark, g));
+    dp.property("label", get(&AutomataProperties::mark, g));
 
     write_graphviz_dp(ofs, g, dp);
 }

@@ -11,18 +11,38 @@
 #include "types/types.h"
 
 int main() {
-    auto reader = SingleGraphReader<Automata>();
+
     auto recorder = getRecorder<DirectedGraph>(
         [] {return new DiskRecorder<DirectedGraph>("./biset-graphs/");},
         "DiskRecorder(./biset-graphs/)"
     );
 
-    auto graphs = reader.read();
-    auto g = *graphs.begin();
-    auto generator = BisetGraph<DirectedGraph>(g);
+    // Ask for xor mask
+    std::cout << "Generate default biset[automata]:" << std::endl;
+    std::cout << "1: from automata\n";
+    std::cout << "2: from graph\n";
 
-    for (auto& graph : generator.generateGraphs()) {
-        recorder->recordGraph(graph, "biset");
+    std::string option;
+    std::getline(std::cin, option);
+
+    if (option.empty() || option == "1") {
+        auto reader = SingleGraphReader<Automata>();
+        auto graphs = reader.read();
+        auto g = *graphs.begin();
+        auto generator = BisetGraph(g);
+
+        for (auto& graph : generator.generateGraphs()) {
+            recorder->recordGraph(graph, "biset-automata");
+        }
+    } else {
+        auto reader = SingleGraphReader<DirectedGraph>();
+        auto graphs = reader.read();
+        auto g = *graphs.begin();
+        auto generator = BisetGraph(g);
+
+        for (auto& graph : generator.generateGraphs()) {
+            recorder->recordGraph(graph, "biset-graph");
+        }
     }
 
     std::cout << "Press Enter to exit...";

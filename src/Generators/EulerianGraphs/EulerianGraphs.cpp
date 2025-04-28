@@ -102,7 +102,7 @@ GraphCoroutine::pull_type EulerianGraphs<DirectedGraph>::generateGraphs() {
             auto count = 0;
             for (auto it = vi; it != vi_end; ++it) {
                 possible_v.insert(*it);
-                graph[*it].node_id = count++;
+                graph[*it].node_id = std::to_string(count++);
             }
 
             for (int j = 0; j < vertexes_count * 2 - 1; ++j) {

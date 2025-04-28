@@ -114,13 +114,15 @@ Analytics generateAutomatasGraph(DirectedGraph& g, IFilter<Automata>& filter, Gr
 
     auto [vi, vi_end] = boost::vertices(new_graph);
     for (auto it = vi; it != vi_end; ++it) {
-        new_graph[*it].node_id = *it;
+        new_graph[*it].node_id = std::to_string(*it);
     }
 
-    auto generator = AutomatasFromGraph<AutomataGenerationResult>(g, true);
+    auto generator = AutomatasFromGraph<AutomataGenerationResult>(g, false, true);
     int count = 0;
+
     for (auto [mask, automata_ptr]  : generator.generateGraphs()) {
         auto newMask = xorMask ^ mask;
+        // (new ConsoleRecorder<Automata>())->recordGraph(*automata_ptr, std::to_string(newMask));
         for (int i = 0; i < n; ++i) {
             unsigned int flipped = newMask ^ (1 << i);
             auto [edge_it, exists] = boost::edge(vertex_map[newMask], vertex_map[flipped], new_graph);

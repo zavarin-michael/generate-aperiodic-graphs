@@ -36,7 +36,7 @@ GraphCoroutine::pull_type SingleGraphReader<DirectedGraph>::read() {
         }
         auto [vi, vi_end] = boost::vertices(g);
         for (auto it = vi; it != vi_end; ++it) {
-            g[*it].node_id = *it;
+            g[*it].node_id = std::to_string(*it);
         }
         yield(g);
     });
@@ -50,14 +50,14 @@ AutomataCoroutine::pull_type SingleGraphReader<Automata>::read() {
         boost::dynamic_properties dp;
         dp.property("label", boost::get(&VertexProperties::node_id, g));
         dp.property("node_id", boost::get(&VertexProperties::node_id, g));
-        dp.property("label", boost::get(&EdgeProperties::mark, g));
+        dp.property("label", boost::get(&AutomataProperties::mark, g));
 
         if (!boost::read_graphviz(file, g, dp)) {
             throw std::runtime_error("Failed to read DOT file");
         }
         auto [vi, vi_end] = boost::vertices(g);
         for (auto it = vi; it != vi_end; ++it) {
-            g[*it].node_id = *it;
+            g[*it].node_id = std::to_string(*it);
         }
         yield(g);
     });
