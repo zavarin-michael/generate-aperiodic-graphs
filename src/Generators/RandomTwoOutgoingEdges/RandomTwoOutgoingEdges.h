@@ -10,6 +10,7 @@ private:
     size_t vertexes_count{10};
     size_t graphs_count{10000};
     bool with_self_loops{true};
+    bool with_multiple_edges{false};
     static int parsePositiveInt(const std::string& input, const std::string& field_name);
 public:
     using pull_type = typename GeneratorTraits<GraphType>::pull_type;

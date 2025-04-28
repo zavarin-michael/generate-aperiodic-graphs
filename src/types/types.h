@@ -10,7 +10,7 @@ struct VertexProperties {
 };
 
 using Graph = boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS, VertexProperties>;
-using DirectedGraph = boost::adjacency_list<boost::vecS, boost::vecS, boost::directedS, VertexProperties>;
+using DirectedGraph = boost::adjacency_list<boost::listS, boost::vecS, boost::bidirectionalS, VertexProperties>;
 using GraphCoroutine = boost::coroutines2::coroutine<DirectedGraph&>;
 
 // Marked edge

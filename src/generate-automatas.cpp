@@ -19,14 +19,20 @@ int main() {
     );
 
     auto g = *reader.read().begin();
+
+    auto [vi, vi_end] = boost::vertices(g);
+    for (auto it = vi; it != vi_end; ++it) {
+        g[*it].node_id = *it;
+    }
+
     auto generator = AutomatasFromGraph<AutomataGenerationResult>(g);
 
     for (auto [mask, automata_ptr] : generator.generateGraphs()) {
         recorder->recordGraph(*automata_ptr);
     }
 
-    auto copy = *Copy<DiskRecorder<DirectedGraph>, Automata>(recorder);
-    copy.recordGraph(g, "graph");
+    IRecorder<DirectedGraph>* copy = Copy<DirectedGraph, Automata>(recorder);
+    copy->recordGraph(g, "graph");
 
     std::cout << "Press Enter to exit...";
     std::cin.get();

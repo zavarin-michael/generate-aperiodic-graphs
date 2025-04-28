@@ -34,6 +34,10 @@ GraphCoroutine::pull_type SingleGraphReader<DirectedGraph>::read() {
         if (!boost::read_graphviz(file, g, dp)) {
             throw std::runtime_error("Failed to read DOT file");
         }
+        auto [vi, vi_end] = boost::vertices(g);
+        for (auto it = vi; it != vi_end; ++it) {
+            g[*it].node_id = *it;
+        }
         yield(g);
     });
 }
@@ -50,6 +54,10 @@ AutomataCoroutine::pull_type SingleGraphReader<Automata>::read() {
 
         if (!boost::read_graphviz(file, g, dp)) {
             throw std::runtime_error("Failed to read DOT file");
+        }
+        auto [vi, vi_end] = boost::vertices(g);
+        for (auto it = vi; it != vi_end; ++it) {
+            g[*it].node_id = *it;
         }
         yield(g);
     });

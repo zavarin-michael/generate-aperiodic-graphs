@@ -3,11 +3,14 @@
 #include <Generators/RandomTwoOutgoingEdges/RandomTwoOutgoingEdges.h>
 #include <types/types.h>
 
+#include "Generators/EulerianGraphs/EulerianGraphs.h"
+
 template<>
 IGenerator<DirectedGraph>* getGenerator(const std::function<IGenerator<DirectedGraph>*()>& getDefaultGenerator, const std::string& defaultGeneratorName) {
     std::cout << "Select a Generator [" << defaultGeneratorName << "]" << std::endl;
     std::cout << "1: AllTwoOutgoingEdges" << std::endl;
     std::cout << "2: RandomTwoOutgoingEdges" << std::endl;
+    std::cout << "3: EulerianGraphs" << std::endl;
 
     std::string option;
     std::getline(std::cin, option);
@@ -28,6 +31,8 @@ IGenerator<DirectedGraph>* getGenerator(const std::function<IGenerator<DirectedG
             return new AllTwoOutgoingEdges<DirectedGraph>();
         case 2:
             return new RandomTwoOutgoingEdges<DirectedGraph>();
+        case 3:
+            return new EulerianGraphs<DirectedGraph>();
         default:
             std::cout << "Invalid option. Defaulting to NoRecorder" << std::endl;
         throw;
