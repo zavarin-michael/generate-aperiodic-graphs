@@ -11,6 +11,21 @@ void ConsoleRecorder<DirectedGraph>::recordGraph(DirectedGraph& g, std::string n
         auto edges = out_edges(v, g);
         for (auto it = edges.first; it != edges.second; ++it) {
             int target_vertex = target(*it, g);
+            std::cout << target_vertex << " ";
+        }
+        std::cout << '\n';
+    }
+    std::cout << "------------------------" << '\n';
+}
+
+template<>
+void ConsoleRecorder<BisetGraph>::recordGraph(BisetGraph& g, std::string name) {
+    std::cout << "Graph_" << name << ":" << '\n';
+    for (int v = 0; v < g.m_vertices.size(); ++v) {
+        std::cout << v << ": ";
+        auto edges = out_edges(v, g);
+        for (auto it = edges.first; it != edges.second; ++it) {
+            int target_vertex = target(*it, g);
             std::cout << target_vertex << "[" << g[*it].meta << "]" << " ";
         }
         std::cout << '\n';
@@ -19,7 +34,7 @@ void ConsoleRecorder<DirectedGraph>::recordGraph(DirectedGraph& g, std::string n
 }
 
 template<>
-void ConsoleRecorder<Graph>::recordGraph(Graph& g, std::string name) {
+void ConsoleRecorder<UndirectedGraph>::recordGraph(UndirectedGraph& g, std::string name) {
     std::cout << "Graph_" << name << ":" << '\n';
     auto [vi, vi_end] = boost::vertices(g);
     for (auto it = vi; it != vi_end; ++it) {
@@ -51,4 +66,5 @@ void ConsoleRecorder<Automata>::recordGraph(Automata& g, std::string name) {
 
 template class ConsoleRecorder<DirectedGraph>;
 template class ConsoleRecorder<Automata>;
-template class ConsoleRecorder<Graph>;
+template class ConsoleRecorder<UndirectedGraph>;
+template class ConsoleRecorder<BisetGraph>;

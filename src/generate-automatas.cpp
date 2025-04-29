@@ -22,7 +22,7 @@ int main() {
 
     auto [vi, vi_end] = boost::vertices(g);
     for (auto it = vi; it != vi_end; ++it) {
-        g[*it].node_id = std::to_string(*it);
+        g[*it].node_id = *it;
     }
 
     auto generator = AutomatasFromGraph<AutomataGenerationResult>(g, true);

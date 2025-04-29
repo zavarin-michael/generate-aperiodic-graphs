@@ -9,4 +9,5 @@ void NoRecorder<GraphType>::recordGraph(GraphType& g, std::string name) {
 
 template class NoRecorder<DirectedGraph>;
 template class NoRecorder<Automata>;
-template class NoRecorder<Graph>;
+template class NoRecorder<UndirectedGraph>;
+template class NoRecorder<BisetGraph>;

@@ -36,7 +36,7 @@ GraphCoroutine::pull_type SingleGraphReader<DirectedGraph>::read() {
         }
         auto [vi, vi_end] = boost::vertices(g);
         for (auto it = vi; it != vi_end; ++it) {
-            g[*it].node_id = std::to_string(*it);
+            g[*it].node_id = *it;
         }
         yield(g);
     });
@@ -57,7 +57,7 @@ AutomataCoroutine::pull_type SingleGraphReader<Automata>::read() {
         }
         auto [vi, vi_end] = boost::vertices(g);
         for (auto it = vi; it != vi_end; ++it) {
-            g[*it].node_id = std::to_string(*it);
+            g[*it].node_id = *it;
         }
         yield(g);
     });

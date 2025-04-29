@@ -37,12 +37,12 @@ DiskRecorder<GraphType>::DiskRecorder(std::filesystem::path rootDir, std::filesy
 }
 
 template<>
-inline void DiskRecorder<Graph>::writeGraph(std::ofstream &ofs, Graph& g) {
+inline void DiskRecorder<UndirectedGraph>::writeGraph(std::ofstream &ofs, UndirectedGraph& g) {
     boost::dynamic_properties dp;
     dp.property("fillcolor", get(&VertexProperties::fillcolor, g));
     dp.property("node_id", get(&VertexProperties::node_id, g));
     dp.property("style",
-        boost::make_constant_property<Graph::vertex_descriptor>(std::string("filled"))
+        boost::make_constant_property<UndirectedGraph::vertex_descriptor>(std::string("filled"))
     );
 
     // add option to editor if needed
@@ -60,7 +60,19 @@ inline void DiskRecorder<DirectedGraph>::writeGraph(std::ofstream &ofs, Directed
     dp.property("style",
         boost::make_constant_property<DirectedGraph::vertex_descriptor>(std::string("filled"))
     );
-    dp.property("label", get(&DirectedGraphProperties::meta, g));
+
+    write_graphviz_dp(ofs, g, dp);
+}
+
+template<>
+inline void DiskRecorder<BisetGraph>::writeGraph(std::ofstream &ofs, BisetGraph& g) {
+    boost::dynamic_properties dp;
+    dp.property("fillcolor", get(&BisetVertexProperties::fillcolor, g));
+    dp.property("node_id", get(&BisetVertexProperties::node_id, g));
+    dp.property("style",
+        boost::make_constant_property<DirectedGraph::vertex_descriptor>(std::string("filled"))
+    );
+    dp.property("label", get(&BisetGraphProperties::meta, g));
 
     write_graphviz_dp(ofs, g, dp);
 }
@@ -112,4 +124,5 @@ DiskRecorder<GraphType> DiskRecorder<GraphType>::setDirPath(std::filesystem::pat
 
 template class DiskRecorder<DirectedGraph>;
 template class DiskRecorder<Automata>;
-template class DiskRecorder<Graph>;
+template class DiskRecorder<UndirectedGraph>;
+template class DiskRecorder<BisetGraph>;

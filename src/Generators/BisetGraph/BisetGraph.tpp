@@ -6,12 +6,12 @@ auto make_ordered_pair = [](auto a, auto b) {
 };
 
 template<typename GraphType>
-BisetGraph<GraphType>::BisetGraph(GraphType& g): graph(g) {}
+BisetGraphGenerator<GraphType>::BisetGraphGenerator(GraphType& g): graph(g) {}
 
 template<>
-GraphCoroutine::pull_type BisetGraph<Automata>::generateGraphs() {
-    return GraphCoroutine::pull_type([this](GraphCoroutine::push_type &yield) {
-        DirectedGraph g;
+BisetGraphCoroutine::pull_type BisetGraphGenerator<Automata>::generateGraphs() {
+    return BisetGraphCoroutine::pull_type([this](BisetGraphCoroutine::push_type &yield) {
+        BisetGraph g;
 
         std::vector<Automata::vertex_descriptor> automata_vertices;
         for (auto [vi, vi_end] = boost::vertices(graph); vi != vi_end; ++vi) {
@@ -28,7 +28,7 @@ GraphCoroutine::pull_type BisetGraph<Automata>::generateGraphs() {
                     auto p = make_ordered_pair(v1, v2);
                 if (pair_to_vertex.contains(p))
                     continue;
-                VertexProperties props;
+                BisetVertexProperties props;
                 props.node_id = std::to_string(v1) + ' ' + std::to_string(v2);
                 const auto vertex_in_g = boost::add_vertex(props, g);
 
@@ -84,13 +84,13 @@ GraphCoroutine::pull_type BisetGraph<Automata>::generateGraphs() {
 }
 
 template<>
-GraphCoroutine::pull_type BisetGraph<DirectedGraph>::generateGraphs() {
-    return GraphCoroutine::pull_type([this](GraphCoroutine::push_type &yield) {
-        DirectedGraph g;
+BisetGraphCoroutine::pull_type BisetGraphGenerator<DirectedGraph>::generateGraphs() {
+    return BisetGraphCoroutine::pull_type([this](BisetGraphCoroutine::push_type &yield) {
+        BisetGraph g;
 
-        std::vector<Automata::vertex_descriptor> automata_vertices;
+        std::vector<DirectedGraph::vertex_descriptor> graph_vertices;
         for (auto [vi, vi_end] = boost::vertices(graph); vi != vi_end; ++vi) {
-            automata_vertices.push_back(*vi);
+            graph_vertices.push_back(*vi);
         }
 
         // mapping to source edges
@@ -98,13 +98,15 @@ GraphCoroutine::pull_type BisetGraph<DirectedGraph>::generateGraphs() {
 
 
         // all edges from source graph
-        for (auto v1 : automata_vertices) {
-            for (auto v2 : automata_vertices) {
-                    auto p = make_ordered_pair(v1, v2);
+        for (auto v1 : graph_vertices) {
+            for (auto v2 : graph_vertices) {
+                auto p = make_ordered_pair(v1, v2);
                 if (pair_to_vertex.contains(p))
                     continue;
-                VertexProperties props;
+                BisetVertexProperties props;
                 props.node_id = std::to_string(v1) + ' ' + std::to_string(v2);
+                props.v1 = v1;
+                props.v2 = v2;
                 const auto vertex_in_g = boost::add_vertex(props, g);
 
                 pair_to_vertex[p] = vertex_in_g;
@@ -115,8 +117,8 @@ GraphCoroutine::pull_type BisetGraph<DirectedGraph>::generateGraphs() {
             }
         }
 
-        for (auto v1 : automata_vertices) {
-            for (auto v2 : automata_vertices) {
+        for (auto v1 : graph_vertices) {
+            for (auto v2 : graph_vertices) {
                 std::vector<std::vector<Automata::vertex_descriptor>> targets(8);
 
                 // all transitions from v1
@@ -143,7 +145,7 @@ GraphCoroutine::pull_type BisetGraph<DirectedGraph>::generateGraphs() {
                 auto src = pair_to_vertex[make_ordered_pair(v1, v2)];
                 for (int i = 0; i < 8; i++) {
                     auto dests = targets[i];
-                    DirectedGraphProperties props;
+                    BisetGraphProperties props;
                     props.meta = i / 2;
                     if (dests.size() > 1) {
                         auto dst = pair_to_vertex[make_ordered_pair(dests[0], dests[1])];
@@ -161,5 +163,5 @@ GraphCoroutine::pull_type BisetGraph<DirectedGraph>::generateGraphs() {
     });
 }
 
-template class BisetGraph<Automata>;
-template class BisetGraph<DirectedGraph>;
+template class BisetGraphGenerator<Automata>;
+template class BisetGraphGenerator<DirectedGraph>;

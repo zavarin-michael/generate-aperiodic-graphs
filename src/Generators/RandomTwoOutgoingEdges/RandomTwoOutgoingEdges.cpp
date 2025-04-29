@@ -81,7 +81,7 @@ GraphCoroutine::pull_type RandomTwoOutgoingEdges<DirectedGraph>::generateGraphs(
 
             auto [vi, vi_end] = boost::vertices(graph);
             for (auto it = vi; it != vi_end; ++it) {
-                graph[*it].node_id = std::to_string(*it);
+                graph[*it].node_id = *it;
             }
 
             yield(graph);

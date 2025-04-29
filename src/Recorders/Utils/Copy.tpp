@@ -25,10 +25,10 @@ IRecorder<To>* Copy(IRecorder<From>* from) {
 
 template IRecorder<DirectedGraph>* Copy(IRecorder<DirectedGraph>* from);
 template IRecorder<DirectedGraph>* Copy(IRecorder<Automata>* from);
-template IRecorder<DirectedGraph>* Copy(IRecorder<Graph>* from);
+template IRecorder<DirectedGraph>* Copy(IRecorder<UndirectedGraph>* from);
 template IRecorder<Automata>* Copy(IRecorder<DirectedGraph>* from);
 template IRecorder<Automata>* Copy(IRecorder<Automata>* from);
-template IRecorder<Automata>* Copy(IRecorder<Graph>* from);
-template IRecorder<Graph>* Copy(IRecorder<DirectedGraph>* from);
-template IRecorder<Graph>* Copy(IRecorder<Automata>* from);
-template IRecorder<Graph>* Copy(IRecorder<Graph>* from);
+template IRecorder<Automata>* Copy(IRecorder<UndirectedGraph>* from);
+template IRecorder<UndirectedGraph>* Copy(IRecorder<DirectedGraph>* from);
+template IRecorder<UndirectedGraph>* Copy(IRecorder<Automata>* from);
+template IRecorder<UndirectedGraph>* Copy(IRecorder<UndirectedGraph>* from);
