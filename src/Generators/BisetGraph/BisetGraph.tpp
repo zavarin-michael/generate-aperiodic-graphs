@@ -59,6 +59,8 @@ BisetGraphCoroutine::pull_type BisetGraphGenerator<Automata>::generateGraphs() {
                 }
 
                 for (const auto& [label, dests] : targets) {
+                    BisetGraphProperties props;
+                    props.meta = 'a' - label;
                     if (dests.size() > 1) {
                         auto src = pair_to_vertex[make_ordered_pair(v1, v2)];
                         auto dst = pair_to_vertex[make_ordered_pair(dests[0], dests[1])];

@@ -12,8 +12,8 @@
 
 int main() {
 
-    auto recorder = getRecorder<DirectedGraph>(
-        [] {return new DiskRecorder<DirectedGraph>("./biset-graphs/");},
+    auto recorder = getRecorder<BisetGraph>(
+        [] {return new DiskRecorder<BisetGraph>("./biset-graphs/");},
         "DiskRecorder(./biset-graphs/)"
     );
 
@@ -29,7 +29,7 @@ int main() {
         auto reader = SingleGraphReader<Automata>();
         auto graphs = reader.read();
         auto g = *graphs.begin();
-        auto generator = BisetGraph(g);
+        auto generator = BisetGraphGenerator(g);
 
         for (auto& graph : generator.generateGraphs()) {
             recorder->recordGraph(graph, "biset-automata");
@@ -38,7 +38,7 @@ int main() {
         auto reader = SingleGraphReader<DirectedGraph>();
         auto graphs = reader.read();
         auto g = *graphs.begin();
-        auto generator = BisetGraph(g);
+        auto generator = BisetGraphGenerator(g);
 
         for (auto& graph : generator.generateGraphs()) {
             recorder->recordGraph(graph, "biset-graph");
