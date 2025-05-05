@@ -60,7 +60,7 @@ void AutomatasFromGraph<Type>::generateAutomata(long long mask, Automata& automa
 
     auto [vi, vi_end] = boost::vertices(automata);
     for (auto it = vi; it != vi_end; ++it) {
-        automata[*it].node_id = *it;
+        automata[*it].node_id = getVertexName(*it);
     }
 }
 

@@ -114,7 +114,7 @@ Analytics generateAutomatasGraph(DirectedGraph& g, IFilter<Automata>& filter, Un
 
     auto [vi, vi_end] = boost::vertices(new_graph);
     for (auto it = vi; it != vi_end; ++it) {
-        new_graph[*it].node_id = *it;
+        new_graph[*it].node_id = getVertexName(*it);
     }
     long long count = 0;
 

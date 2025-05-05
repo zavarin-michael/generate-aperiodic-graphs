@@ -121,7 +121,7 @@ BisetGraphCoroutine::pull_type BisetGraphGenerator<DirectedGraph>::generateGraph
 
         for (auto v1 : graph_vertices) {
             for (auto v2 : graph_vertices) {
-                std::vector<std::vector<Automata::vertex_descriptor>> targets(8);
+                std::vector<std::vector<DirectedGraph::vertex_descriptor>> targets(8);
 
                 // all transitions from v1
                 auto c = 0;

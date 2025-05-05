@@ -5,7 +5,7 @@
 #include <boost/coroutine2/all.hpp>
 
 struct VertexProperties {
-    long long node_id;
+    std::string node_id;
     std::string fillcolor;
 };
 
@@ -41,7 +41,7 @@ using BisetGraph = boost::adjacency_list<
 using BisetGraphCoroutine = boost::coroutines2::coroutine<BisetGraph&>;
 
 // Marked edge
-struct AutomataProperties {
+struct AutomataEdgeProperties {
     char mark;
 };
 
@@ -50,7 +50,7 @@ using Automata = boost::adjacency_list<
     boost::vecS,
     boost::bidirectionalS,
     VertexProperties,
-    AutomataProperties
+    AutomataEdgeProperties
 >;
 using AutomataCoroutine = boost::coroutines2::coroutine<Automata&>;
 

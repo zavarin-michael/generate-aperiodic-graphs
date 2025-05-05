@@ -19,3 +19,14 @@ std::vector<int> getInput() {
 
     return choices;
 }
+
+std::string getVertexName(long long c) {
+    return 'v' + std::to_string(c);
+}
+
+std::string computeIntLabelFromNodeId(const std::string& node_id) {
+    if (!node_id.empty() && node_id[0] == 'v') {
+        return node_id.substr(1);
+    }
+    return node_id;
+}
