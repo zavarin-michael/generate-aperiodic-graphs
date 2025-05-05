@@ -9,6 +9,7 @@
 #include "Recorders/Utils/Copy.h"
 #include "Selectors/Selectors.h"
 #include "types/types.h"
+#include "Utils/Utils.h"
 
 int main() {
     auto reader = SingleGraphReader<DirectedGraph>();
@@ -22,13 +23,13 @@ int main() {
 
     auto [vi, vi_end] = boost::vertices(g);
     for (auto it = vi; it != vi_end; ++it) {
-        g[*it].node_id = *it;
+        g[*it].node_id = getVertexName(*it);
     }
 
-    auto generator = AutomatasFromGraph<AutomataGenerationResult>(g);
+    auto generator = AutomatasFromGraph<AutomataGenerationResult>(g, true);
 
     for (auto [mask, automata_ptr] : generator.generateGraphs()) {
-        recorder->recordGraph(*automata_ptr);
+        recorder->recordGraph(*automata_ptr, std::to_string(mask));
     }
 
     IRecorder<DirectedGraph>* copy = Copy<DirectedGraph, Automata>(recorder);

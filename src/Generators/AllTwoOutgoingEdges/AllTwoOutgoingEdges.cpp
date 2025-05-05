@@ -4,6 +4,7 @@
 #include <boost/graph/copy.hpp>
 
 #include "types/types.h"
+#include "Utils/Utils.h"
 
 template<>
 int AllTwoOutgoingEdges<DirectedGraph>::parsePositiveInt(const std::string& input, const std::string& field_name) {
@@ -78,7 +79,7 @@ GraphCoroutine::pull_type AllTwoOutgoingEdges<DirectedGraph>::generateGraphs() {
 
                 auto [vi, vi_end] = boost::vertices(graph);
                 for (auto it = vi; it != vi_end; ++it) {
-                    graph[*it].node_id = *it;
+                    graph[*it].node_id = getVertexName(*it);
                 }
 
                 bool has_loops = std::any_of(

@@ -49,14 +49,14 @@ boost::coroutines2::coroutine<DirectedGraph&>::pull_type getGraphsToAnalyze() {
 }
 
 struct Analytics {
-    int synchronizedCount;
-    int nonSynchronizedCount;
-    int maxRepaintingStepsCount;
-    int vertexMaxRepaintingStepsCount;
-    int id;
+    long long synchronizedCount;
+    long long nonSynchronizedCount;
+    long long maxRepaintingStepsCount;
+    long long vertexMaxRepaintingStepsCount;
+    long long id;
 };
 
-void getMinDistancesToGreen(Graph& g, std::vector<std::pair<int, int>>& distance) {
+void getMinDistancesToGreen(UndirectedGraph& g, std::vector<std::pair<int, int>>& distance) {
     auto [vi, vi_end] = boost::vertices(g);
 
     std::queue<DirectedGraph::vertex_descriptor> q;
@@ -93,7 +93,7 @@ void getMinDistancesToGreen(Graph& g, std::vector<std::pair<int, int>>& distance
     }
 }
 
-std::pair<int, int> findLongestToGreen(Graph& g) {
+std::pair<int, int> findLongestToGreen(UndirectedGraph& g) {
     std::vector<std::pair<int, int>> distances;
 
     getMinDistancesToGreen(g, distances);
@@ -103,7 +103,7 @@ std::pair<int, int> findLongestToGreen(Graph& g) {
     });
 }
 
-Analytics generateAutomatasGraph(DirectedGraph& g, IFilter<Automata>& filter, Graph& new_graph, int id, unsigned long long xorMask) {
+Analytics generateAutomatasGraph(DirectedGraph& g, IFilter<Automata>& filter, UndirectedGraph& new_graph, int id, unsigned long long xorMask) {
     auto n = g.m_vertices.size() - 1;
     std::map<int, DirectedGraph::vertex_descriptor> vertex_map;
 
@@ -114,13 +114,30 @@ Analytics generateAutomatasGraph(DirectedGraph& g, IFilter<Automata>& filter, Gr
 
     auto [vi, vi_end] = boost::vertices(new_graph);
     for (auto it = vi; it != vi_end; ++it) {
-        new_graph[*it].node_id = *it;
+        new_graph[*it].node_id = getVertexName(*it);
     }
+    long long count = 0;
 
-    auto generator = AutomatasFromGraph<AutomataGenerationResult>(g, true);
-    int count = 0;
-    for (auto [mask, automata_ptr]  : generator.generateGraphs()) {
-        auto newMask = xorMask ^ mask;
+    // auto generator = AutomatasFromGraph<AutomataGenerationResult>(g, false, true);
+    // for (auto [mask, automata_ptr]  : generator.generateGraphs()) {
+    //     auto newMask = xorMask ^ mask;
+    //     for (int i = 0; i < n; ++i) {
+    //         unsigned int flipped = newMask ^ (1 << i);
+    //         auto [edge_it, exists] = boost::edge(vertex_map[newMask], vertex_map[flipped], new_graph);
+    //         if (!exists) {
+    //             boost::add_edge(vertex_map[newMask], vertex_map[flipped], new_graph);
+    //         }
+    //     }
+    //     auto& automata = *automata_ptr;
+    //     if (filter.isAccepted(automata)) {
+    //         new_graph[vertex_map[mask]].fillcolor = "green";
+    //         count+=2;
+    //     }
+    // }
+
+    auto bisetGraph = *BisetGraphGenerator(g).generateGraphs().begin();
+    for (int mask = 0; mask < 1 << n; mask++) {
+        long long newMask = xorMask ^ mask;
         for (int i = 0; i < n; ++i) {
             unsigned int flipped = newMask ^ (1 << i);
             auto [edge_it, exists] = boost::edge(vertex_map[newMask], vertex_map[flipped], new_graph);
@@ -128,9 +145,8 @@ Analytics generateAutomatasGraph(DirectedGraph& g, IFilter<Automata>& filter, Gr
                 boost::add_edge(vertex_map[newMask], vertex_map[flipped], new_graph);
             }
         }
-        auto& automata = *automata_ptr;
-        if (filter.isAccepted(automata)) {
-            new_graph[vertex_map[mask]].fillcolor = "green";
+        if (isSynchronizedNew(bisetGraph, newMask)) {
+            new_graph[vertex_map[newMask]].fillcolor = "green";
             count+=2;
         }
     }
@@ -150,12 +166,12 @@ Analytics generateAutomatasGraph(DirectedGraph& g, IFilter<Automata>& filter, Gr
 int main() {
     auto graphs = getGraphsToAnalyze();
 
-    auto recorder = getRecorder<Graph>(
-        [] { return new DiskRecorder<Graph>("./automatas-graphs/");},
+    auto recorder = getRecorder<UndirectedGraph>(
+        [] { return new DiskRecorder<UndirectedGraph>("./automatas-graphs/");},
         "DiskRecorder(./automatas-graphs/)"
     );
 
-    auto copy = Copy<DirectedGraph, Graph>(recorder);
+    auto copy = Copy<DirectedGraph, UndirectedGraph>(recorder);
 
     auto filter = SimpleFilter(false, std::vector<std::function<bool(Automata)>> {
         isSynchronized,
@@ -179,7 +195,7 @@ int main() {
     std::cout << "Enter xor mask for automatas graph [0]:" << std::endl;
     std::getline(std::cin, option);
 
-    unsigned long long xorMask = 0;
+    long long xorMask = 0;
     if (!option.empty()) {
         try {
             xorMask = std::stoi(option);
@@ -213,7 +229,7 @@ int main() {
 
     int count = 0;
     for (auto graph : graphs) {
-        Graph new_graph;
+        UndirectedGraph new_graph;
         auto info = generateAutomatasGraph(graph, filter, new_graph, count, xorMask);
 
         maxDistance[info.maxRepaintingStepsCount]++;

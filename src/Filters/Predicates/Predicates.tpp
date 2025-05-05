@@ -56,40 +56,86 @@ bool isEulerian(GraphType& g) {
     return true;
 }
 
-bool dfs(
-    DirectedGraph& graph,
-    DirectedGraph::vertex_descriptor v,
+long long dfs(
+    BisetGraph& graph,
+    BisetGraph::vertex_descriptor v,
     std::vector<bool>& visited
 ) {
-    if (graph[v].fillcolor == "green") {
-        return true;
+    if (visited[v]) {
+        return 0;
     }
 
     visited[v] = true;
+    long long count = 1;
 
-    for (auto [ei, ei_end] = boost::out_edges(v, graph); ei != ei_end; ++ei) {
-        auto u = boost::target(*ei, graph);
-        if (!visited[u]) {
-            if (dfs(graph, u, visited)) {
-                return true;
-            }
-        }
+    for (auto [ei, ei_end] = boost::in_edges(v, graph); ei != ei_end; ++ei) {
+        auto u = boost::source(*ei, graph);
+        count += dfs(graph, u, visited);
     }
 
-    return false;
+    return count;
 }
 
 bool isSynchronized(const Automata& automata) {
     Automata temp = automata;
-    DirectedGraph graph = *BisetGraph<DirectedGraph>(temp).generateGraphs().begin();
+    BisetGraph graph = *BisetGraphGenerator(temp).generateGraphs().begin();
 
-    for (auto [vi, vi_end] = boost::vertices(graph); vi != vi_end; ++vi) {
-        std::vector<bool> visited(boost::num_vertices(graph), false);
-        if (!dfs(graph, *vi, visited)) {
-            return false;
+    std::vector<bool> visited(boost::num_vertices(graph), false);
+    auto vp = boost::vertices(graph);
+    BisetGraph::vertex_descriptor v;
+    for (auto vit = vp.first; vit != vp.second; ++vit) {
+        if (graph[*vit].fillcolor == "green") {
+            v = *vit;
+            break;
         }
     }
-    return true;
+    auto count = dfs(graph, v, visited);
+    return count == graph.m_vertices.size();
+}
+
+long long getBits(long long mask, int v1, int v2) {
+    auto bit1 = (mask >> v1) & 1;
+    auto bit2 = (mask >> v2) & 1;
+    auto result = (bit1 << 1) | bit2;
+    return result;
+}
+
+long long dfs2(
+    BisetGraph& graph,
+    BisetGraph::vertex_descriptor v,
+    std::vector<bool>& visited,
+    long long mask
+) {
+    if (visited[v]) {
+        return 0;
+    }
+    visited[v] = true;
+
+    long long count = 1;
+    for (auto [ei, ei_end] = boost::in_edges(v, graph); ei != ei_end; ++ei) {
+        auto u = boost::source(*ei, graph);
+        auto gMask = getBits(mask, graph[u].v1, graph[u].v2);
+        if (graph[*ei].meta == gMask) {
+            count += dfs2(graph, u, visited, mask);
+        }
+    }
+
+    return count;
+}
+
+bool isSynchronizedNew(BisetGraph& graph, long long mask) {
+    std::vector<bool> visited(boost::num_vertices(graph), false);
+
+    auto vp = boost::vertices(graph);
+    BisetGraph::vertex_descriptor v;
+    for (auto vit = vp.first; vit != vp.second; ++vit) {
+        if (graph[*vit].fillcolor == "green") {
+            v = *vit;
+            break;
+        }
+    }
+    auto count = dfs2(graph, v, visited, mask);
+    return count == graph.m_vertices.size();
 }
 
 template bool isStrongConnected(const DirectedGraph& graph);

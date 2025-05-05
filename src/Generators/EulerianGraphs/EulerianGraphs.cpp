@@ -6,6 +6,7 @@
 #include <Recorders/ConsoleRecorder/ConsoleRecorder.h>
 
 #include "types/types.h"
+#include "Utils/Utils.h"
 
 template<typename S>
 auto select_random(const S &s, size_t n) {
@@ -102,7 +103,7 @@ GraphCoroutine::pull_type EulerianGraphs<DirectedGraph>::generateGraphs() {
             auto count = 0;
             for (auto it = vi; it != vi_end; ++it) {
                 possible_v.insert(*it);
-                graph[*it].node_id = count++;
+                graph[*it].node_id = getVertexName(count++);
             }
 
             for (int j = 0; j < vertexes_count * 2 - 1; ++j) {

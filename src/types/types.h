@@ -5,17 +5,43 @@
 #include <boost/coroutine2/all.hpp>
 
 struct VertexProperties {
-    long long node_id;
+    std::string node_id;
     std::string fillcolor;
 };
 
-using Graph = boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS, VertexProperties>;
 
-using DirectedGraph = boost::adjacency_list<boost::listS, boost::vecS, boost::bidirectionalS, VertexProperties>;
+
+using UndirectedGraph = boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS, VertexProperties>;
+using DirectedGraph = boost::adjacency_list<
+    boost::listS,
+    boost::vecS,
+    boost::bidirectionalS,
+    VertexProperties
+>;
 using GraphCoroutine = boost::coroutines2::coroutine<DirectedGraph&>;
 
+struct BisetVertexProperties {
+    std::string node_id;
+    std::string fillcolor;
+    int v1{};
+    int v2{};
+};
+
+struct BisetGraphProperties {
+    int meta;
+};
+
+using BisetGraph = boost::adjacency_list<
+    boost::listS,
+    boost::vecS,
+    boost::bidirectionalS,
+    BisetVertexProperties,
+    BisetGraphProperties
+>;
+using BisetGraphCoroutine = boost::coroutines2::coroutine<BisetGraph&>;
+
 // Marked edge
-struct EdgeProperties {
+struct AutomataEdgeProperties {
     char mark;
 };
 
@@ -24,12 +50,12 @@ using Automata = boost::adjacency_list<
     boost::vecS,
     boost::bidirectionalS,
     VertexProperties,
-    EdgeProperties
+    AutomataEdgeProperties
 >;
 using AutomataCoroutine = boost::coroutines2::coroutine<Automata&>;
 
 struct AutomataGenerationResult {
-    int mask;
+    long long mask;
     std::shared_ptr<Automata> automata;
 };
 

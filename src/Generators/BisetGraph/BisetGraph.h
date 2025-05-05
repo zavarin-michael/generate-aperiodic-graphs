@@ -5,15 +5,16 @@
 #include <types/types.h>
 
 template <typename GraphType>
-class BisetGraph : public IGenerator<GraphType> {
+class BisetGraphGenerator : public IGenerator<BisetGraph> {
 private:
-    Automata& automata;
+    GraphType& graph;
 public:
-    using pull_type = typename GeneratorTraits<GraphType>::pull_type;
+    using pull_type = GeneratorTraits<BisetGraph>::pull_type;
 
-    BisetGraph(Automata& g);
+    BisetGraphGenerator(GraphType& g);
     pull_type generateGraphs() override;
 };
 
+#include "BisetGraph.tpp"
 
 #endif
