@@ -36,7 +36,7 @@ AllTwoOutgoingEdges<DirectedGraph>::AllTwoOutgoingEdges() {
         with_self_loops = input != "false";
     }
 
-    std::cout << std::left << "-> Show progress [true]: " << (show_progress ? "true" : "false") << "]: ";
+    std::cout << std::left << "-> Show progress[" << (show_progress ? "true" : "false") << "]: ";
     std::getline(std::cin, input);
 
     if (!input.empty()) {
