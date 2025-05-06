@@ -13,15 +13,16 @@
 #include "Selectors/Selectors.h"
 
 int main() {
+    const auto generator = getGenerator<DirectedGraph>(
+        [] { return new RandomTwoOutgoingEdges<DirectedGraph>();},
+        "RandomTwoOutgoingEdges"
+    );
+
     auto const recorder = getRecorder<DirectedGraph>(
         [] { return new DiskRecorder<DirectedGraph>("./graphs/");},
         "DiskRecorder(./graphs/)"
     );
     // auto generator = RandomTwoOutgoingEdges();
-    const auto generator = getGenerator<DirectedGraph>(
-        [] { return new AllTwoOutgoingEdges<DirectedGraph>();},
-        "AllTwoOutgoingEdges"
-    );
 
     auto filter = SimpleFilter<DirectedGraph>(true);
 
