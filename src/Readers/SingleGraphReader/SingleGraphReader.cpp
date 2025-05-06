@@ -9,7 +9,7 @@
 
 template<typename GraphType>
 SingleGraphReader<GraphType>::SingleGraphReader(const std::filesystem::path& filepath) {
-    auto localFilepath = filepath;
+    auto local_filepath = filepath;
     if (filepath.empty()) {
         std::string path;
         std::cout << "\n"
@@ -18,12 +18,30 @@ SingleGraphReader<GraphType>::SingleGraphReader(const std::filesystem::path& fil
                   << "+=====================================+\n\n";
         std::cout << std::left << "-> Enter filename to read: ";
         std::getline(std::cin, path);
-        localFilepath = path;
+        local_filepath = std::filesystem::path(path);
     }
 
-    this->file.open(localFilepath, std::ios::in);
+    // TODO: fix checks, they work badly
+    try {
+        if (local_filepath.empty() || local_filepath.filename().string().empty()) {
+            throw std::runtime_error("Invalid or empty file path.");
+        }
+
+        if (!std::filesystem::exists(local_filepath)) {
+            throw std::runtime_error("File does not exist: " + local_filepath.string());
+        }
+
+        if (!std::filesystem::is_regular_file(local_filepath)) {
+            throw std::runtime_error("Path is not a regular file: " + local_filepath.string());
+        }
+    } catch (const std::exception& ex) {
+        throw std::runtime_error(std::string("Filesystem error: ") + ex.what());
+    }
+
+    this->file.open(local_filepath, std::ios::in);
+
     if (!this->file) {
-        throw std::runtime_error("Cannot open DOT file: " + localFilepath.string());
+        throw std::runtime_error("Cannot open DOT file: " + local_filepath.string());
     }
 }
 

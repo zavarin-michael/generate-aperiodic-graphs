@@ -60,13 +60,13 @@ BisetGraphCoroutine::pull_type BisetGraphGenerator<Automata>::generateGraphs() {
 
                 for (const auto& [label, dests] : targets) {
                     BisetGraphProperties props;
-                    props.meta = 'a' - label;
+                    props.meta = label - 'a';
                     if (dests.size() > 1) {
                         auto src = pair_to_vertex[make_ordered_pair(v1, v2)];
                         auto dst = pair_to_vertex[make_ordered_pair(dests[0], dests[1])];
 
                         if (!boost::edge(src, dst, g).second) {
-                            boost::add_edge(src, dst, g);
+                            boost::add_edge(src, dst, props, g);
                         }
                     }
                     else if (dests.size() == 1) {
@@ -74,7 +74,7 @@ BisetGraphCoroutine::pull_type BisetGraphGenerator<Automata>::generateGraphs() {
                         auto dst = pair_to_vertex[make_ordered_pair(dests[0], dests[0])];
 
                         if (!boost::edge(src, dst, g).second) {
-                            boost::add_edge(src, dst, g);
+                            boost::add_edge(src, dst, props, g);
                         }
                     }
                 }
@@ -163,6 +163,11 @@ BisetGraphCoroutine::pull_type BisetGraphGenerator<DirectedGraph>::generateGraph
 
         yield(g);
     });
+}
+
+template<typename Type>
+size_t BisetGraphGenerator<Type>::countGeneratedGraphs() {
+    return 1;
 }
 
 template class BisetGraphGenerator<Automata>;

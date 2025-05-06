@@ -9,6 +9,7 @@ public:
     using pull_type = typename GeneratorTraits<GraphType>::pull_type;
 
     virtual pull_type generateGraphs() = 0;
+    virtual size_t countGeneratedGraphs() = 0;
     virtual ~IGenerator() = default;
 };
 

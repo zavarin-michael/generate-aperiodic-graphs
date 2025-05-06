@@ -13,6 +13,7 @@ public:
 
     BisetGraphGenerator(GraphType& g);
     pull_type generateGraphs() override;
+    size_t countGeneratedGraphs() override;
 };
 
 #include "BisetGraph.tpp"

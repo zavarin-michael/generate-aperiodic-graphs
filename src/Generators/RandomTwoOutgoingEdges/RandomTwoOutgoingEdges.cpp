@@ -46,6 +46,13 @@ RandomTwoOutgoingEdges<DirectedGraph>::RandomTwoOutgoingEdges() {
     if (!input.empty()) {
         with_multiple_edges = input == "true";
     }
+
+    std::cout << std::left << "-> Show progress [" << (show_progress ? "true" : "false") << "]: ";
+    std::getline(std::cin, input);
+
+    if (!input.empty()) {
+        show_progress = input != "false";
+    }
 }
 
 template <>
@@ -62,7 +69,10 @@ GraphCoroutine::pull_type RandomTwoOutgoingEdges<DirectedGraph>::generateGraphs(
         }
         std::uniform_int_distribution<> dist(0, pair_vertices.size() - 1);
 
-        for (size_t i = 0; i < graphs_count; ++i) {
+        auto start = std::chrono::high_resolution_clock::now();
+
+        size_t i = 1;
+        while (true) {
             auto graph = DirectedGraph(this->vertexes_count);
             bool run;
             for (int j = 0; j < vertexes_count; ++j) {
@@ -85,9 +95,22 @@ GraphCoroutine::pull_type RandomTwoOutgoingEdges<DirectedGraph>::generateGraphs(
                 graph[*it].node_id = getVertexName(*it);
             }
 
+            if (i % 5000 == 0) {
+                printProgress("Graphs progress:", i, graphs_count, start);
+            }
             yield(graph);
+            i++;
+
+            if (i >= graphs_count + 1) {
+                break;
+            }
         }
     });
+}
+
+template<>
+size_t RandomTwoOutgoingEdges<DirectedGraph>::countGeneratedGraphs() {
+    return graphs_count;
 }
 
 template class RandomTwoOutgoingEdges<DirectedGraph>;

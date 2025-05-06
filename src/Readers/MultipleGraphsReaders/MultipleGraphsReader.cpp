@@ -18,7 +18,9 @@ MultipleGraphsReader<GraphType>::MultipleGraphsReader(std::filesystem::path file
                   << "+=====================================+\n"
                   << "|       INITIALIZATION OF READER      |\n"
                   << "+=====================================+\n\n";
-        std::cout << std::left << "-> Enter filename to read: ";
+        std::cout << "!!!Warning!!! \n"
+                  << "Your files in directory must have extension .dot to be read\n";
+        std::cout << std::left << "-> Enter filename to read:";
         std::getline(std::cin, path);
         dirPath = path;
     } else {
@@ -33,24 +35,9 @@ MultipleGraphsReader<GraphType>::MultipleGraphsReader(std::filesystem::path file
 
 template<typename GraphType>
 boost::coroutines2::coroutine<GraphType &>::pull_type MultipleGraphsReader<GraphType>::read() {
-    std::vector<std::filesystem::directory_entry> entries;
-
-    // Step 1: collect all files
-    for (const auto& entry : std::filesystem::directory_iterator(dirPath)) {
-        if (entry.is_regular_file()) {
-            entries.push_back(entry);
-        }
-    }
-
-    std::sort(entries.begin(), entries.end(), [](const std::filesystem::directory_entry& a, const std::filesystem::directory_entry& b) {
-        int numA = std::stoi(a.path().stem().string());
-        int numB = std::stoi(b.path().stem().string());
-        return numA < numB;
-    });
-
-    return typename boost::coroutines2::coroutine<GraphType &>::pull_type([entries](boost::coroutines2::coroutine<GraphType &>::push_type& yield) {
-        for (const auto& entry : entries) {
-            if (entry.is_regular_file()) {
+    return typename boost::coroutines2::coroutine<GraphType &>::pull_type([this](boost::coroutines2::coroutine<GraphType &>::push_type& yield) {
+        for (const auto& entry : std::filesystem::directory_iterator(dirPath)) {
+            if (entry.is_regular_file() && entry.path().extension() == ".dot") {
                 yield(*SingleGraphReader<GraphType>(entry.path()).read().begin());
             }
         }
