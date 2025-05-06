@@ -25,14 +25,15 @@ int main() {
     // auto generator = RandomTwoOutgoingEdges();
 
     auto filter = SimpleFilter<DirectedGraph>(true);
-
+    int c = 0;
     for (auto& graph : generator->generateGraphs()) {
         if (filter.isAccepted(graph)) {
             recorder->recordGraph(graph);
+            c++;
         }
     }
 
-    std::cout << "Graphs count: " << generator->countGeneratedGraphs() << "\n";
+    std::cout << "Graphs count: " << c << "\n";
     std::cout << "Press Enter to exit...";
     std::cin.get();
     return 0;
