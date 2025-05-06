@@ -24,20 +24,14 @@ int main() {
     );
 
     auto filter = SimpleFilter<DirectedGraph>(true);
-    auto count = 0;
 
     for (auto& graph : generator->generateGraphs()) {
         if (filter.isAccepted(graph)) {
             recorder->recordGraph(graph);
-            count++;
-
-            if (count % 10000 == 0) {
-                std::cout << count << std::endl;
-            }
         }
     }
 
-    std::cout << count << '\n';
+    std::cout << "Graphs count: " << generator->countGeneratedGraphs() << "\n";
     std::cout << "Press Enter to exit...";
     std::cin.get();
     return 0;

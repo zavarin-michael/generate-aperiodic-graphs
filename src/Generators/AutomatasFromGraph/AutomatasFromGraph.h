@@ -18,6 +18,7 @@ public:
     using pull_type = typename GeneratorTraits<GraphType>::pull_type;
     AutomatasFromGraph(DirectedGraph& g, bool userInput, bool isHalf = false, std::vector<int> masks = {});
     pull_type generateGraphs() override;
+    size_t countGeneratedGraphs() override;
 };
 
 

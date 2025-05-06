@@ -33,7 +33,14 @@ AllTwoOutgoingEdges<DirectedGraph>::AllTwoOutgoingEdges() {
     std::cout << std::left << "-> With self loops [" << (with_self_loops ? "true" : "false") << "]: ";
     std::getline(std::cin, input);
     if (!input.empty()) {
-        with_self_loops = !(input == "false");
+        with_self_loops = input != "false";
+    }
+
+    std::cout << std::left << "-> Show progress [true]: " << (show_progress ? "true" : "false") << "]: ";
+    std::getline(std::cin, input);
+
+    if (!input.empty()) {
+        show_progress = input != "false";
     }
 }
 
@@ -91,6 +98,10 @@ GraphCoroutine::pull_type AllTwoOutgoingEdges<DirectedGraph>::generateGraphs() {
                 );
 
                 if (!has_loops || with_self_loops) {
+                    graphs_count++;
+                    if (show_progress && graphs_count % 10000 == 0) {
+                        std::cout << graphs_count << "\n";
+                    }
                     yield(graph);
                 }
 
@@ -113,6 +124,11 @@ GraphCoroutine::pull_type AllTwoOutgoingEdges<DirectedGraph>::generateGraphs() {
             }
         }
     });
+}
+
+template<>
+size_t AllTwoOutgoingEdges<DirectedGraph>::countGeneratedGraphs() {
+    return graphs_count;
 }
 
 template class AllTwoOutgoingEdges<DirectedGraph>;

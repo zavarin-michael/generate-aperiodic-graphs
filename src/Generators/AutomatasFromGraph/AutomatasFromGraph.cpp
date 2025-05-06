@@ -25,7 +25,7 @@ AutomatasFromGraph<AutomataGenerationResult>::AutomatasFromGraph(DirectedGraph& 
             this->isHalf = false;
         }
 
-        std::cout << std::left << "-> Specific automatas [all]: ";
+        std::cout << std::left << "-> Specific automatas (space-separated numbers)[all]: ";
         const auto choices = getInput();
         if (!choices.empty()) {
             this->masks = choices;
@@ -97,6 +97,11 @@ AutomataPairCoroutine::pull_type AutomatasFromGraph<AutomataGenerationResult>::g
             }
         }
     });
+}
+
+template<typename Type>
+size_t AutomatasFromGraph<Type>::countGeneratedGraphs() {
+    return 1;
 }
 
 template class AutomatasFromGraph<AutomataGenerationResult>;

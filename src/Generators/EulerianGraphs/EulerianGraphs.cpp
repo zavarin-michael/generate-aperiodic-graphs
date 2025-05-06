@@ -86,6 +86,14 @@ EulerianGraphs<DirectedGraph>::EulerianGraphs() {
     if (!input.empty()) {
         with_multiple_edges = input == "true";
     }
+
+
+    std::cout << std::left << "-> Show progress [" << (show_progress ? "true" : "false") << "]: ";
+    std::getline(std::cin, input);
+
+    if (!input.empty()) {
+        show_progress = input != "false";
+    }
 }
 
 template <>
@@ -93,8 +101,11 @@ GraphCoroutine::pull_type EulerianGraphs<DirectedGraph>::generateGraphs() {
     return GraphCoroutine::pull_type([this](GraphCoroutine::push_type &yield) {
         std::random_device rd;
         std::mt19937 gen(rd());
+        size_t i = 1;
 
-        for (size_t i = 0; i < graphs_count; ++i) {
+        auto start = std::chrono::high_resolution_clock::now();
+
+        while (true) {
             bool br = false;
             auto graph = DirectedGraph(this->vertexes_count);
             auto possible_v = std::set<long long>();
@@ -155,11 +166,23 @@ GraphCoroutine::pull_type EulerianGraphs<DirectedGraph>::generateGraphs() {
                 take &= !with_self_loops || to != from;
                 if (take) {
                     add_edge(from, to, graph);
+                    if (i % 5000 == 0) {
+                        printProgress("Graphs progress:", i, graphs_count, start);
+                    }
                     yield(graph);
+                    i++;
+                    if (i >= graphs_count + 1) {
+                        break;
+                    }
                 }
             }
         }
     });
+}
+
+template<>
+size_t EulerianGraphs<DirectedGraph>::countGeneratedGraphs() {
+    return graphs_count;
 }
 
 template class EulerianGraphs<DirectedGraph>;
