@@ -66,4 +66,29 @@ struct GeneratorTraits {
     using pull_type = boost::coroutines2::coroutine<GraphType&>::pull_type;
 };
 
+template <typename T>
+struct TypeName {
+    static std::string get() { return "UnknownGraphType"; }
+};
+
+template <>
+struct TypeName<DirectedGraph> {
+    static std::string get() { return "DirectedGraph"; }
+};
+
+template <>
+struct TypeName<Automata> {
+    static std::string get() { return "Automata"; }
+};
+
+template <>
+struct TypeName<UndirectedGraph> {
+    static std::string get() { return "UndirectedGraph"; }
+};
+
+template <>
+struct TypeName<BisetGraph> {
+    static std::string get() { return "BisetGraph"; }
+};
+
 #endif

@@ -38,6 +38,7 @@ DiskRecorder<GraphType>::DiskRecorder(std::filesystem::path rootDir, std::filesy
         std::cout << "+=====================================+\n"
                   << "|     INITIALIZATION OF RECOREDER     |\n"
                   << "+=====================================+\n\n";
+        std::cout << "GraphType: " << TypeName<GraphType>::get() << "\n";
     }
 
     if (rootDir.empty()) {

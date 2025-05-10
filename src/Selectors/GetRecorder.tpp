@@ -6,6 +6,7 @@
 
 template<typename GraphType>
 IRecorder<GraphType>* getRecorder(const std::function<IRecorder<GraphType>*()>& getDefaultRecorder, const std::string& defaultRecorderName) {
+    std::cout << "GraphType: " << TypeName<GraphType>::get() << "\n";
     std::cout << "Select a Recorder [" << defaultRecorderName << "]" << std::endl;
     std::cout << "1: DiskRecorder" << std::endl;
     std::cout << "2: ConsoleRecorder" << std::endl;

@@ -7,6 +7,7 @@
 
 template<typename GraphType>
 IReader<GraphType>* getReader(const std::function<IReader<GraphType>*()>& getDefaultReader, const std::string& defaultReaderName) {
+    std::cout << "GraphType: " << TypeName<GraphType>::get() << "\n";
     std::cout << "Select a Reader [" << defaultReaderName << "]" << std::endl;
     std::cout << "1: SingleGraphReader" << std::endl;
     std::cout << "2: MultipleGraphsReader" << std::endl;

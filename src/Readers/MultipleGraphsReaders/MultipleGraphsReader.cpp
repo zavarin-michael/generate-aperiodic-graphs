@@ -18,6 +18,7 @@ MultipleGraphsReader<GraphType>::MultipleGraphsReader(std::filesystem::path file
                   << "+=====================================+\n"
                   << "|       INITIALIZATION OF READER      |\n"
                   << "+=====================================+\n\n";
+        std::cout << "GraphType: " << TypeName<GraphType>::get() << "\n";
         std::cout << "!!!Warning!!! \n"
                   << "Your files in directory must have extension .dot to be read\n";
         std::cout << std::left << "-> Enter filename to read:";

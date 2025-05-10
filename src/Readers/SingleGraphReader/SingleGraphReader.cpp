@@ -16,6 +16,7 @@ SingleGraphReader<GraphType>::SingleGraphReader(const std::filesystem::path& fil
                   << "+=====================================+\n"
                   << "|       INITIALIZATION OF READER      |\n"
                   << "+=====================================+\n\n";
+        std::cout << "GraphType: " << TypeName<GraphType>::get() << "\n";
         std::cout << std::left << "-> Enter filename to read: ";
         std::getline(std::cin, path);
         local_filepath = std::filesystem::path(path);

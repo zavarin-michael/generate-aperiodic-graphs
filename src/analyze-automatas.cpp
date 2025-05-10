@@ -43,7 +43,7 @@ boost::coroutines2::coroutine<DirectedGraph&>::pull_type getGraphsToAnalyze() {
     }
     auto reader = getReader<DirectedGraph>(
         [] {return new SingleGraphReader<DirectedGraph>();},
-        "SingleGraphReader<Graph>()"
+        "SingleGraphReader<DirectedGraph>()"
     );
     return reader->read();
 }
