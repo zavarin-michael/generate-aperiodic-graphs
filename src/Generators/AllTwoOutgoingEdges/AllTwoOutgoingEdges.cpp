@@ -7,16 +7,6 @@
 #include "Utils/Utils.h"
 
 template<>
-int AllTwoOutgoingEdges<DirectedGraph>::parsePositiveInt(const std::string& input, const std::string& field_name) {
-    std::istringstream iss(input);
-    int value;
-    if (!(iss >> value) || value <= 0) {
-        throw std::invalid_argument("Invalid input for \"" + field_name + "\": must be a positive integer.");
-    }
-    return value;
-}
-
-template<>
 AllTwoOutgoingEdges<DirectedGraph>::AllTwoOutgoingEdges() {
     std::string input;
     std::cout << "\n"

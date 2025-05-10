@@ -17,7 +17,6 @@ private:
     bool show_progress{true};
     bool with_self_loops{false};
     bool with_multiple_edges{false};
-    static int parsePositiveInt(const std::string& input, const std::string& field_name);
 public:
     using pull_type = typename GeneratorTraits<GraphType>::pull_type;
     EulerianGraphs();

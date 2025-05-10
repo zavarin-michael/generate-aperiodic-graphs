@@ -56,6 +56,39 @@ bool isEulerian(GraphType& g) {
     return true;
 }
 
+template <typename GraphType>
+bool isMatchLoopsCount(GraphType& g, size_t count) {
+    size_t loop_count = 0;
+    for (auto [ei, ei_end] = edges(g); ei != ei_end; ++ei) {
+        if (source(*ei, g) == target(*ei, g)) {
+            ++loop_count;
+        }
+    }
+
+    return loop_count == count;
+}
+
+template <typename GraphType>
+bool isMatchMultipleEdgesCount(GraphType& g, size_t count) {
+    size_t multiple_edges_count = 0;
+
+    std::map<std::pair<int, int>, int> edge_map;
+
+    for (auto [ei, ei_end] = edges(g); ei != ei_end; ++ei) {
+        auto u = source(*ei, g);
+        auto v = target(*ei, g);
+        edge_map[std::make_pair(u, v)]++;
+    }
+
+    for (const auto& [key, count] : edge_map) {
+        if (count > 1) {
+            multiple_edges_count += 1;
+        }
+    }
+
+    return multiple_edges_count == count;
+}
+
 long long dfs(
     BisetGraph& graph,
     BisetGraph::vertex_descriptor v,
@@ -147,5 +180,11 @@ template bool isAperiodic(const Automata& automata);
 template bool isNotAperiodic(const DirectedGraph& graph);
 template bool isNotAperiodic(const Automata& automata);
 
+template bool isEulerian(const DirectedGraph& graph);
 template bool isEulerian(const Automata& automata);
-template bool isEulerian(const DirectedGraph& automata);
+
+template bool isMatchLoopsCount(const DirectedGraph& graph, size_t count);
+template bool isMatchLoopsCount(const Automata& automata, size_t count);
+
+template bool isMatchMultipleEdgesCount(const DirectedGraph& graph, size_t count);
+template bool isMatchMultipleEdgesCount(const Automata& automata, size_t count);

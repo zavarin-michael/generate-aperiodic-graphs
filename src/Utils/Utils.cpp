@@ -52,3 +52,12 @@ void printProgress(const std::string& title,  size_t i, size_t graphs_count,
     std::cout << "Percent of all graphs calculated: " << div * 100 << "%\n";
     std::cout << "------------------------\n";
 }
+
+int parsePositiveInt(const std::string& input, const std::string& field_name) {
+    std::istringstream iss(input);
+    int value;
+    if (!(iss >> value) || value <= 0) {
+        throw std::invalid_argument("Invalid input for \"" + field_name + "\": must be a positive integer.");
+    }
+    return value;
+}

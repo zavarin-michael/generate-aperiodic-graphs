@@ -11,7 +11,6 @@ private:
     size_t graphs_count{0};
     bool show_progress{true};
     bool with_self_loops{true};
-    static int parsePositiveInt(const std::string& input, const std::string& field_name);
 public:
     using pull_type = typename GeneratorTraits<GraphType>::pull_type;
 
