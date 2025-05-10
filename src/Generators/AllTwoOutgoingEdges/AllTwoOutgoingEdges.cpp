@@ -7,16 +7,6 @@
 #include "Utils/Utils.h"
 
 template<>
-int AllTwoOutgoingEdges<DirectedGraph>::parsePositiveInt(const std::string& input, const std::string& field_name) {
-    std::istringstream iss(input);
-    int value;
-    if (!(iss >> value) || value <= 0) {
-        throw std::invalid_argument("Invalid input for \"" + field_name + "\": must be a positive integer.");
-    }
-    return value;
-}
-
-template<>
 AllTwoOutgoingEdges<DirectedGraph>::AllTwoOutgoingEdges() {
     std::string input;
     std::cout << "\n"
@@ -36,7 +26,7 @@ AllTwoOutgoingEdges<DirectedGraph>::AllTwoOutgoingEdges() {
         with_self_loops = input != "false";
     }
 
-    std::cout << std::left << "-> Show progress [true]: " << (show_progress ? "true" : "false") << "]: ";
+    std::cout << std::left << "-> Show progress[" << (show_progress ? "true" : "false") << "]: ";
     std::getline(std::cin, input);
 
     if (!input.empty()) {

@@ -16,17 +16,6 @@ auto select_random(const S &s, size_t n) {
     return it;
 }
 
-template<>
-int EulerianGraphs<DirectedGraph>::parsePositiveInt(const std::string& input, const std::string& field_name) {
-    std::istringstream iss(input);
-    int value;
-    if (!(iss >> value) || value <= 0) {
-        throw std::invalid_argument("Invalid input for \"" + field_name + "\": must be a positive integer.");
-    }
-    return value;
-}
-
-
 boost::graph_traits<DirectedGraph>::vertex_descriptor find_vertex_with_in_degree_one(DirectedGraph& graph) {
     auto [v_begin, v_end] = vertices(graph);
 
@@ -117,7 +106,15 @@ GraphCoroutine::pull_type EulerianGraphs<DirectedGraph>::generateGraphs() {
                 graph[*it].node_id = getVertexName(count++);
             }
 
-            for (int j = 0; j < vertexes_count * 2 - 1; ++j) {
+            int subtrahend = 0;
+            bool is_added_multiple = false;
+            if (with_self_loops) {
+                add_edge(0, 0, graph);
+                subtrahend += 1;
+            }
+
+
+            for (int j = subtrahend; j < vertexes_count * 2 - 1; ++j) {
                 auto erased = std::set<long long>();
                 if (!with_self_loops || out_degree(current_v, graph) == 1) {
                     auto k = possible_v.erase(current_v);
@@ -126,11 +123,21 @@ GraphCoroutine::pull_type EulerianGraphs<DirectedGraph>::generateGraphs() {
                     }
                 }
 
-                if (!with_multiple_edges && out_degree(current_v, graph) == 1) {
+                if (out_degree(current_v, graph) == 1) {
                     auto [out_i, out_end] = out_edges(current_v, graph);
-                    auto k = possible_v.erase(target(*out_i, graph));
-                    if (k > 0) {
-                        erased.insert(target(*out_i, graph));
+                    auto dest = target(*out_i, graph);
+                    if (!with_multiple_edges) {
+                        auto k = possible_v.erase(dest);
+                        if (k > 0) {
+                            erased.insert(dest);
+                        }
+                    } else {
+                        if (!is_added_multiple && possible_v.contains(dest)) {
+                            erased.insert(possible_v.begin(), possible_v.end());
+                            possible_v.clear();
+                            possible_v.insert(dest);
+                            is_added_multiple = true;
+                        }
                     }
                 }
 

@@ -5,16 +5,6 @@
 #include "types/types.h"
 #include "Utils/Utils.h"
 
-template<>
-int RandomTwoOutgoingEdges<DirectedGraph>::parsePositiveInt(const std::string& input, const std::string& field_name) {
-    std::istringstream iss(input);
-    int value;
-    if (!(iss >> value) || value <= 0) {
-        throw std::invalid_argument("Invalid input for \"" + field_name + "\": must be a positive integer.");
-    }
-    return value;
-}
-
 template <>
 RandomTwoOutgoingEdges<DirectedGraph>::RandomTwoOutgoingEdges() {
     std::string input;
@@ -75,7 +65,22 @@ GraphCoroutine::pull_type RandomTwoOutgoingEdges<DirectedGraph>::generateGraphs(
         while (true) {
             auto graph = DirectedGraph(this->vertexes_count);
             bool run;
-            for (int j = 0; j < vertexes_count; ++j) {
+
+            int subtrahend = 0;
+            if (with_self_loops) {
+                auto [v, u] = pair_vertices[dist(gen)];
+                add_edge(subtrahend, subtrahend, graph);
+                add_edge(subtrahend, v, graph);
+                subtrahend += 1;
+            }
+            if (with_multiple_edges) {
+                auto [v, u] = pair_vertices[dist(gen)];
+                add_edge(subtrahend, v, graph);
+                add_edge(subtrahend, v, graph);
+                subtrahend += 1;
+            }
+
+            for (int j = subtrahend; j < vertexes_count; ++j) {
                 do {
                     auto [v, u] = pair_vertices[dist(gen)];
                     run = false;
